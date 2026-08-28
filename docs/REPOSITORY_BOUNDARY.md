@@ -1,15 +1,24 @@
 # Repository boundary
 
-This repository is the canonical source for the Java financial domain:
+This repository is the canonical source for the Auth/public gateway domain:
 
-- `auth-service`: authentication, sessions, notifications and the public API;
-- `kfe-service`: ledger, wallets, reconciliation and financial execution;
-- `kerosene-shared`: Java infrastructure shared only inside Core;
-- `adapters`: rail adapters owned by the Core release cycle.
+- `auth-service`: authentication, sessions, notifications and the public API.
 
-`kerosene-contracts` is a transitional compatibility module.
-`Daniel-Astrofer/kerosene-contracts` is the canonical protocol source, and the
-local module will be removed after Core consumes its published Java artifact.
+Contracts are owned by the sibling `kerosene-contracts` repository and are
+consumed through a Gradle composite build. Core no longer contains a copied
+contracts module. Operator clients are owned by `kerosene-admin`; Python rail
+processes are owned by `kerosene-rails`.
+Image recipes and healthcheck packaging source are owned by `kerosene-deploy`.
+Financial execution is owned by `kerosene-kfe`; neutral Java runtime utilities
+are owned by `kerosene-shared`.
+
+`auth-service` is physically and compile-time independent from KFE. It consumes
+canonical contracts and communicates with KFE through remote clients at
+runtime; no KFE implementation artifact is present on the Core classpath.
 
 Core must not read source files from the archived monorepo, Clients, Vault,
-Node or Deploy.
+Node, Admin, Rails, KFE, Shared or Deploy source files; Gradle composite builds
+are dependency substitution for local development, not source ownership.
+
+See [the module boundary register](en/MODULE_BOUNDARIES.md) for ownership,
+current coupling and removal gates.

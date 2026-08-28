@@ -39,4 +39,4 @@ Transactional core, rail exec, auditable money state.
 
 Old finance domains purged. Not SoT. Do not restore.
 
-See `docs/backend/KFE_ONLY_FINANCIAL_ARCHITECTURE.md` and `docs/backend/INFRASTRUCTURE.md`.
+See `kerosene-kfe/docs/reference/KFE_ONLY_FINANCIAL_ARCHITECTURE.md` and `docs/backend/INFRASTRUCTURE.md`.

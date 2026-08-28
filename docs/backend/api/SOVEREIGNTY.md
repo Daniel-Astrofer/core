@@ -4,11 +4,11 @@ Documentação operacional da família de endpoints de soberania do nó, attesta
 
 Fonte primária: código real em:
 
-- `backend/kerosene/auth-service/src/main/java/com/kerosene/security/SovereigntyStatusController.java`
-- `backend/kerosene/auth-service/src/main/java/com/kerosene/sovereign/quorum/QuorumShardController.java`
-- `backend/kerosene/auth-service/src/main/java/com/kerosene/sovereign/quorum/QuorumShardService.java`
-- `backend/kerosene/auth-service/src/main/java/com/kerosene/sovereign/quorum/QuorumAttestationService.java`
-- `backend/kerosene/auth-service/src/main/java/com/kerosene/common/security/EndpointPolicyRegistry.java`
+- `auth-service/src/main/java/com/kerosene/security/SovereigntyStatusController.java`
+- `auth-service/src/main/java/com/kerosene/sovereign/quorum/QuorumShardController.java`
+- `auth-service/src/main/java/com/kerosene/sovereign/quorum/QuorumShardService.java`
+- `auth-service/src/main/java/com/kerosene/sovereign/quorum/QuorumAttestationService.java`
+- `auth-service/src/main/java/com/kerosene/common/security/EndpointPolicyRegistry.java`
 
 `docs/backend/API_REFERENCE.md` pode ser usado como índice consolidado, mas a política efetiva documentada aqui vem do `EndpointPolicyRegistry` e das validações implementadas nos controllers/services.
 

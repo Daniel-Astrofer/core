@@ -1,0 +1,8 @@
+.git
+.github
+.gradle
+build
+auth-service/build
+docs
+*.log
+.env

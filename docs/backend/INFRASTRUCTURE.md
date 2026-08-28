@@ -1,6 +1,11 @@
-# Infrastructure
+# Infrastructure integration
 
-Runtime and custody layout for Kerosene. Canonical deploy paths: `infra/docker/`, `infra/kubernetes/`, `infra/scripts/`. Architecture baseline: [`VAULT_MESH_PLAN.md`](../../VAULT_MESH_PLAN.md) (repo root).
+This document describes how Core integrates with the runtime. The canonical
+Compose, Kubernetes and operations files are in the standalone
+`kerosene-deploy` repository. Paths beginning with `infra/` below are relative
+to that repository and commands must be executed from its root. Vault custody
+implementation and architecture belong to the standalone `kerosene-vault`
+repository.
 
 ## Sources
 
@@ -12,9 +17,9 @@ Runtime and custody layout for Kerosene. Canonical deploy paths: `infra/docker/`
 | `infra/docker/compose/vault-mesh-staging.compose.yaml` | staging mesh (mTLS) |
 | `infra/kubernetes/overlays/local-full` | local-full Kind deploy |
 | `infra/kubernetes/docs/LOCAL_FULL_RUNTIME.md` | local-full operator notes |
-| `backend/kerosene/.../application*.properties` | app runtime profiles |
-| `backend/kerosene/kfe-service/.../kfe-service-vaultmesh-*.properties` | mesh bridge profiles |
-| `backend/kerosene-vault` | vault mesh (Rust) — treasury / FROST shares |
+| `auth-service/src/main/resources/application*.properties` | Auth runtime profiles in this repository |
+| `kerosene-kfe/src/main/resources/kfe-service-vaultmesh-*.properties` | KFE bridge profiles in this repository |
+| standalone `kerosene-vault` repository | vault mesh (Rust) — treasury / FROST shares |
 | Ops AES (`AES_SECRET`) | Core `VaultKeyProvider` loads ops AES from env only (no Java vault service) |
 | `.../db/migration` | Flyway |
 
@@ -71,7 +76,7 @@ Ceremony = real over-wire FROST DKG (prod and lab share the path; lab may use `d
 
 ## Backend runtime
 
-- Java 21 / Spring Boot in `backend/kerosene`
+- Java 21 / Spring Boot in this repository
 - KFE domain package: **`com.kerosene.kfe`** (not `source.kfe`)
 
 | Area | Behavior |
@@ -103,7 +108,7 @@ Domain docs: [api/README.md](api/README.md). Inventory: [API_REFERENCE.md](API_R
 
 ## Data
 
-- Flyway under `backend/kerosene` / `kfe-service` migration trees
+- Flyway under the Auth and KFE migration trees in this repository
 - Covers: users/security factors; wallets/ledger/balances/payments/txs; Bitcoin/cold/PSBT/tax; treasury/PoR/audit; KFE core/idempotency/outbox/audit hash/UTXO…
 - Redis: sessions/rate-limit/challenges/idempotency as configured
 

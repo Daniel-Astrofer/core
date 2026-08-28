@@ -101,7 +101,7 @@ STRICT_DOCS=1 scripts/verify-kfe-only.sh
 
 ## Focused Tests
 ```bash
-cd backend/kerosene
+cd /path/to/kerosene-core
 ./gradlew test --tests 'com.kerosene.kfe.*'
 ./gradlew test --tests '*Kfe*'
 ```

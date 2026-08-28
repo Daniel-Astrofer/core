@@ -1,6 +1,6 @@
 # Auth e Conta API
 
-Fonte principal: controllers, DTOs e configuracao de seguranca em `backend/kerosene/auth-service/src/main/java/com/kerosene/auth/**`.
+Fonte principal: controllers, DTOs e configuração de segurança em `auth-service/src/main/java/com/kerosene/auth/**`.
 
 `docs/backend/API_REFERENCE.md` permanece como referencia consolidada e foi usado apenas como auditoria de cobertura. A politica efetiva vem de `EndpointPolicyRegistry`, `Security` e de anotacoes `@PreAuthorize`.
 
@@ -28,55 +28,55 @@ Controllers cobertos:
 
 | Metodo | Path | Controller.handler | Auth | Request | Response | Fonte |
 | --- | --- | --- | --- | --- | --- | --- |
-| `GET` | `/auth/activation-status` | `AccountActivationController.getStatus` | AUTHENTICATED | none | `ApiResponse<AccountActivationStatusDTO>` | [AccountActivationController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AccountActivationController.java#L28) |
-| `POST` | `/auth/activation-status/funding-link` | `AccountActivationController.createFundingLink` | AUTHENTICATED | none | `ApiResponse<AccountActivationStatusDTO>` | [AccountActivationController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AccountActivationController.java#L34) |
-| `POST` | `/auth/activation-status/{linkId}/confirm` | `AccountActivationController.confirm` | AUTHENTICATED | path: linkId: String<br>body: Map<String, String> | `ApiResponse<AccountActivationStatusDTO>` | [AccountActivationController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AccountActivationController.java#L43) |
-| `GET` | `/auth/admin/access-attempts/pending` | `AdminAccessController.pendingAttempts` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | none | `ApiResponse<List<AdminAccessAttemptDTO>>` | [AdminAccessController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L95) |
-| `POST` | `/auth/admin/access-attempts/{attemptId}/decision` | `AdminAccessController.decide` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | path: attemptId: UUID<br>body: AdminAccessDecisionRequestDTO | `ApiResponse<AdminAccessAttemptDTO>` | [AdminAccessController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L103) |
-| `GET` | `/auth/admin/devices` | `AdminAccessController.devices` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | none | `ApiResponse<List<AdminAuthenticatedDeviceDTO>>` | [AdminAccessController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L115) |
-| `POST` | `/auth/admin/devices/{deviceId}/block` | `AdminAccessController.blockDevice` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | path: deviceId: String | `ApiResponse<AdminAuthenticatedDeviceDTO>` | [AdminAccessController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L123) |
-| `POST` | `/auth/admin/devices/{deviceId}/revoke` | `AdminAccessController.revokeDevice` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | path: deviceId: String | `ApiResponse<AdminAuthenticatedDeviceDTO>` | [AdminAccessController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L134) |
-| `DELETE` | `/auth/admin/key` | `AdminAccessController.revokeKey` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | none | `ApiResponse<AdminKeyStatusDTO>` | [AdminAccessController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L87) |
-| `GET` | `/auth/admin/key` | `AdminAccessController.keyStatus` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | none | `ApiResponse<AdminKeyStatusDTO>` | [AdminAccessController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L79) |
-| `POST` | `/auth/admin/key` | `AdminAccessController.createOrRotateKey` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | body: AdminKeyCreateRequestDTO | `ApiResponse<AdminKeyStatusDTO>` | [AdminAccessController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L71) |
-| `POST` | `/auth/admin/login` | `AdminAccessController.startLogin` | PUBLIC | body: AdminLoginRequestDTO | `ApiResponse<AdminLoginResponseDTO>` | [AdminAccessController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L41) |
-| `GET` | `/auth/admin/login/{attemptId}` | `AdminAccessController.pollLogin` | PUBLIC | path: attemptId: UUID | `ApiResponse<AdminLoginResponseDTO>` | [AdminAccessController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L58) |
-| `GET` | `/auth/backup-codes` | `BackupCodesController.getStatus` | AUTHENTICATED | none | `ApiResponse<BackupCodesStatusDTO>` | [BackupCodesController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/BackupCodesController.java#L24) |
-| `POST` | `/auth/backup-codes/regenerate` | `BackupCodesController.regenerate` | AUTHENTICATED | none | `ApiResponse<BackupCodesStatusDTO>` | [BackupCodesController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/BackupCodesController.java#L30) |
-| `GET` | `/auth/device-key/challenge` | `DeviceKeyController.getChallenge` | PUBLIC | query: username: String | `ApiResponse<DeviceKeyChallengeResponse>` | [DeviceKeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L140) |
-| `GET` | `/auth/device-key/devices` | `DeviceKeyController.getRegisteredDevices` | AUTHENTICATED | none | `ApiResponse<List<DeviceKeyDeviceDTO>>` | [DeviceKeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L268) |
-| `POST` | `/auth/device-key/devices/{credentialId}/revoke` | `DeviceKeyController.revokeDevice` | AUTHENTICATED | path: credentialId: String | `ApiResponse<List<DeviceKeyDeviceDTO>>` | [DeviceKeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L281) |
-| `POST` | `/auth/device-key/onboarding/finish` | `DeviceKeyController.finishOnboardingRegistration` | PUBLIC | query: sessionId: String<br>body: DeviceKeyRegistrationRequest | `ApiResponse<String>` | [DeviceKeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L99) |
-| `POST` | `/auth/device-key/onboarding/start` | `DeviceKeyController.startOnboardingRegistration` | PUBLIC | query: sessionId: String, username: String | `ApiResponse<DeviceKeyChallengeResponse>` | [DeviceKeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L76) |
-| `POST` | `/auth/device-key/register/finish` | `DeviceKeyController.finishAuthenticatedRegistration` | AUTHENTICATED | body: DeviceKeyRegistrationRequest | `ApiResponse<String>` | [DeviceKeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L165) |
-| `POST` | `/auth/device-key/register/start` | `DeviceKeyController.startAuthenticatedRegistration` | AUTHENTICATED | none | `ApiResponse<DeviceKeyChallengeResponse>` | [DeviceKeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L152) |
-| `POST` | `/auth/device-key/verify` | `DeviceKeyController.verifyAndLogin` | PUBLIC | body: DeviceKeyVerifyRequest | `ApiResponse<Object>` | [DeviceKeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L188) |
-| `POST` | `/auth/login` | `UserController.login` | PUBLIC | body: UserDTO | `ApiResponse<String>` | [UserController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/UserController.java#L43) |
-| `POST` | `/auth/login/totp/verify` | `UserController.verifyLoginTotpCode` | PUBLIC | body: UserDTO | `ApiResponse<String>` | [UserController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/UserController.java#L69) |
-| `POST` | `/auth/logout` | `UserController.logout` | AUTHENTICATED | header: Authorization: Bearer &lt;JWT&gt; | `ApiResponse<Void>` | [UserController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/UserController.java#L81) |
-| `GET` | `/auth/me` | `MeController.getCurrentUser` | AUTHENTICATED | header: X-Device-Hash (optional) | `ApiResponse<Map<String, Object>>` | [MeController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/MeController.java#L33) |
-| `GET` | `/auth/passkey/challenge` | `PasskeyController.getChallenge` | PUBLIC | query: username: String | `ApiResponse<String>` | [PasskeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L70) |
-| `GET` | `/auth/passkey/devices` | `PasskeyController.getRegisteredDevices` | AUTHENTICATED | none | `ApiResponse<PasskeyInventoryDTO>` | [PasskeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L76) |
-| `POST` | `/auth/passkey/devices/{deviceInstallId}/block` | `PasskeyController.blockDevice` | AUTHENTICATED | path: deviceInstallId: String | `ApiResponse<PasskeyInventoryDTO>` | [PasskeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L105) |
-| `POST` | `/auth/passkey/devices/{deviceInstallId}/revoke` | `PasskeyController.revokeDevice` | AUTHENTICATED | path: deviceInstallId: String | `ApiResponse<PasskeyInventoryDTO>` | [PasskeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L110) |
-| `POST` | `/auth/passkey/onboarding/finish` | `PasskeyController.finishOnboardingRegistration` | PUBLIC | query: sessionId: String<br>body: PasskeyRegistrationRequest | `ApiResponse<String>` | [PasskeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L132) |
-| `POST` | `/auth/passkey/onboarding/start` | `PasskeyController.startOnboardingRegistration` | PUBLIC | query: sessionId: String | `ApiResponse<String>` | [PasskeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L120) |
-| `POST` | `/auth/passkey/register` | `PasskeyController.registerPasskey` | AUTHENTICATED | body: PasskeyRegistrationRequest | `ApiResponse<String>` | [PasskeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L95) |
-| `POST` | `/auth/passkey/verify` | `PasskeyController.verifyAndLogin` | PUBLIC | body: PasskeyVerifyRequest | `ApiResponse<Object>` | [PasskeyController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L115) |
-| `GET` | `/auth/pow/challenge` | `UserController.getPowChallenge` | PUBLIC | none | `ApiResponse<Map<String, String>>` | [UserController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/UserController.java#L37) |
-| `POST` | `/auth/recovery/emergency/finish` | `EmergencyRecoveryController.finish` | PUBLIC | body: EmergencyRecoveryFinishRequest | `ApiResponse<EmergencyRecoveryFinishResponse>` | [EmergencyRecoveryController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/EmergencyRecoveryController.java#L53) |
-| `POST` | `/auth/recovery/emergency/start` | `EmergencyRecoveryController.start` | PUBLIC | body: EmergencyRecoveryStartRequest | `ApiResponse<EmergencyRecoveryStartResponse>` | [EmergencyRecoveryController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/EmergencyRecoveryController.java#L29) |
-| `GET` | `/auth/security-status` | `AccountSecurityStatusController.getStatus` | AUTHENTICATED | none | `ApiResponse<AccountSecurityStatusDTO>` | [AccountSecurityStatusController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AccountSecurityStatusController.java#L23) |
-| `GET` | `/auth/security/app-pin` | `AppPinController.getStatus` | AUTHENTICATED | header: X-Device-Hash (optional) | `ApiResponse<AppPinStatusDTO>` | [AppPinController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AppPinController.java#L29) |
-| `PUT` | `/auth/security/app-pin` | `AppPinController.configure` | AUTHENTICATED | header: X-Device-Hash (optional)<br>body: ConfigureAppPinRequestDTO | `ApiResponse<AppPinStatusDTO>` | [AppPinController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AppPinController.java#L37) |
-| `POST` | `/auth/security/app-pin/verify` | `AppPinController.verify` | AUTHENTICATED | header: X-Device-Hash (optional)<br>body: VerifyAppPinRequestDTO | `ApiResponse<AppPinStatusDTO>` | [AppPinController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AppPinController.java#L46) |
-| `GET` | `/auth/security/profile` | `AccountSecurityController.getProfile` | AUTHENTICATED | header: X-Device-Hash (optional) | `ApiResponse<AccountSecurityProfileDTO>` | [AccountSecurityController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AccountSecurityController.java#L47) |
-| `PUT` | `/auth/security/profile` | `AccountSecurityController.updateProfile` | AUTHENTICATED | header: X-Device-Hash (optional)<br>body: AccountSecurityUpdateRequestDTO | `ApiResponse<AccountSecurityProfileDTO>` | [AccountSecurityController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/AccountSecurityController.java#L62) |
-| `POST` | `/auth/signup` | `UserController.signup` | PUBLIC | body: UserDTO | `ApiResponse<SignupResponseDTO>` | [UserController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/UserController.java#L50) |
-| `POST` | `/auth/signup/totp/verify` | `UserController.verifySignupTotpCode` | PUBLIC | body: SignupTotpVerifyRequestDTO | `ApiResponse<String>` | [UserController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/UserController.java#L57) |
-| `DELETE` | `/auth/totp` | `TotpController.disable` | AUTHENTICATED | none | `ApiResponse<String>` | [TotpController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/TotpController.java#L45) |
-| `POST` | `/auth/totp/setup` | `TotpController.setup` | AUTHENTICATED | none | `ApiResponse<TotpSetupResponseDTO>` | [TotpController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/TotpController.java#L28) |
-| `POST` | `/auth/totp/verify` | `TotpController.verify` | AUTHENTICATED | body: Map<String, String> | `ApiResponse<BackupCodesStatusDTO>` | [TotpController.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/controller/TotpController.java#L35) |
+| `GET` | `/auth/activation-status` | `AccountActivationController.getStatus` | AUTHENTICATED | none | `ApiResponse<AccountActivationStatusDTO>` | [AccountActivationController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AccountActivationController.java#L28) |
+| `POST` | `/auth/activation-status/funding-link` | `AccountActivationController.createFundingLink` | AUTHENTICATED | none | `ApiResponse<AccountActivationStatusDTO>` | [AccountActivationController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AccountActivationController.java#L34) |
+| `POST` | `/auth/activation-status/{linkId}/confirm` | `AccountActivationController.confirm` | AUTHENTICATED | path: linkId: String<br>body: Map<String, String> | `ApiResponse<AccountActivationStatusDTO>` | [AccountActivationController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AccountActivationController.java#L43) |
+| `GET` | `/auth/admin/access-attempts/pending` | `AdminAccessController.pendingAttempts` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | none | `ApiResponse<List<AdminAccessAttemptDTO>>` | [AdminAccessController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L95) |
+| `POST` | `/auth/admin/access-attempts/{attemptId}/decision` | `AdminAccessController.decide` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | path: attemptId: UUID<br>body: AdminAccessDecisionRequestDTO | `ApiResponse<AdminAccessAttemptDTO>` | [AdminAccessController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L103) |
+| `GET` | `/auth/admin/devices` | `AdminAccessController.devices` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | none | `ApiResponse<List<AdminAuthenticatedDeviceDTO>>` | [AdminAccessController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L115) |
+| `POST` | `/auth/admin/devices/{deviceId}/block` | `AdminAccessController.blockDevice` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | path: deviceId: String | `ApiResponse<AdminAuthenticatedDeviceDTO>` | [AdminAccessController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L123) |
+| `POST` | `/auth/admin/devices/{deviceId}/revoke` | `AdminAccessController.revokeDevice` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | path: deviceId: String | `ApiResponse<AdminAuthenticatedDeviceDTO>` | [AdminAccessController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L134) |
+| `DELETE` | `/auth/admin/key` | `AdminAccessController.revokeKey` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | none | `ApiResponse<AdminKeyStatusDTO>` | [AdminAccessController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L87) |
+| `GET` | `/auth/admin/key` | `AdminAccessController.keyStatus` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | none | `ApiResponse<AdminKeyStatusDTO>` | [AdminAccessController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L79) |
+| `POST` | `/auth/admin/key` | `AdminAccessController.createOrRotateKey` | ADMIN/METHOD_SECURITY<br>`@PreAuthorize("hasRole('ADMIN')")` | body: AdminKeyCreateRequestDTO | `ApiResponse<AdminKeyStatusDTO>` | [AdminAccessController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L71) |
+| `POST` | `/auth/admin/login` | `AdminAccessController.startLogin` | PUBLIC | body: AdminLoginRequestDTO | `ApiResponse<AdminLoginResponseDTO>` | [AdminAccessController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L41) |
+| `GET` | `/auth/admin/login/{attemptId}` | `AdminAccessController.pollLogin` | PUBLIC | path: attemptId: UUID | `ApiResponse<AdminLoginResponseDTO>` | [AdminAccessController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AdminAccessController.java#L58) |
+| `GET` | `/auth/backup-codes` | `BackupCodesController.getStatus` | AUTHENTICATED | none | `ApiResponse<BackupCodesStatusDTO>` | [BackupCodesController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/BackupCodesController.java#L24) |
+| `POST` | `/auth/backup-codes/regenerate` | `BackupCodesController.regenerate` | AUTHENTICATED | none | `ApiResponse<BackupCodesStatusDTO>` | [BackupCodesController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/BackupCodesController.java#L30) |
+| `GET` | `/auth/device-key/challenge` | `DeviceKeyController.getChallenge` | PUBLIC | query: username: String | `ApiResponse<DeviceKeyChallengeResponse>` | [DeviceKeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L140) |
+| `GET` | `/auth/device-key/devices` | `DeviceKeyController.getRegisteredDevices` | AUTHENTICATED | none | `ApiResponse<List<DeviceKeyDeviceDTO>>` | [DeviceKeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L268) |
+| `POST` | `/auth/device-key/devices/{credentialId}/revoke` | `DeviceKeyController.revokeDevice` | AUTHENTICATED | path: credentialId: String | `ApiResponse<List<DeviceKeyDeviceDTO>>` | [DeviceKeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L281) |
+| `POST` | `/auth/device-key/onboarding/finish` | `DeviceKeyController.finishOnboardingRegistration` | PUBLIC | query: sessionId: String<br>body: DeviceKeyRegistrationRequest | `ApiResponse<String>` | [DeviceKeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L99) |
+| `POST` | `/auth/device-key/onboarding/start` | `DeviceKeyController.startOnboardingRegistration` | PUBLIC | query: sessionId: String, username: String | `ApiResponse<DeviceKeyChallengeResponse>` | [DeviceKeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L76) |
+| `POST` | `/auth/device-key/register/finish` | `DeviceKeyController.finishAuthenticatedRegistration` | AUTHENTICATED | body: DeviceKeyRegistrationRequest | `ApiResponse<String>` | [DeviceKeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L165) |
+| `POST` | `/auth/device-key/register/start` | `DeviceKeyController.startAuthenticatedRegistration` | AUTHENTICATED | none | `ApiResponse<DeviceKeyChallengeResponse>` | [DeviceKeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L152) |
+| `POST` | `/auth/device-key/verify` | `DeviceKeyController.verifyAndLogin` | PUBLIC | body: DeviceKeyVerifyRequest | `ApiResponse<Object>` | [DeviceKeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/DeviceKeyController.java#L188) |
+| `POST` | `/auth/login` | `UserController.login` | PUBLIC | body: UserDTO | `ApiResponse<String>` | [UserController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/UserController.java#L43) |
+| `POST` | `/auth/login/totp/verify` | `UserController.verifyLoginTotpCode` | PUBLIC | body: UserDTO | `ApiResponse<String>` | [UserController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/UserController.java#L69) |
+| `POST` | `/auth/logout` | `UserController.logout` | AUTHENTICATED | header: Authorization: Bearer &lt;JWT&gt; | `ApiResponse<Void>` | [UserController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/UserController.java#L81) |
+| `GET` | `/auth/me` | `MeController.getCurrentUser` | AUTHENTICATED | header: X-Device-Hash (optional) | `ApiResponse<Map<String, Object>>` | [MeController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/MeController.java#L33) |
+| `GET` | `/auth/passkey/challenge` | `PasskeyController.getChallenge` | PUBLIC | query: username: String | `ApiResponse<String>` | [PasskeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L70) |
+| `GET` | `/auth/passkey/devices` | `PasskeyController.getRegisteredDevices` | AUTHENTICATED | none | `ApiResponse<PasskeyInventoryDTO>` | [PasskeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L76) |
+| `POST` | `/auth/passkey/devices/{deviceInstallId}/block` | `PasskeyController.blockDevice` | AUTHENTICATED | path: deviceInstallId: String | `ApiResponse<PasskeyInventoryDTO>` | [PasskeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L105) |
+| `POST` | `/auth/passkey/devices/{deviceInstallId}/revoke` | `PasskeyController.revokeDevice` | AUTHENTICATED | path: deviceInstallId: String | `ApiResponse<PasskeyInventoryDTO>` | [PasskeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L110) |
+| `POST` | `/auth/passkey/onboarding/finish` | `PasskeyController.finishOnboardingRegistration` | PUBLIC | query: sessionId: String<br>body: PasskeyRegistrationRequest | `ApiResponse<String>` | [PasskeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L132) |
+| `POST` | `/auth/passkey/onboarding/start` | `PasskeyController.startOnboardingRegistration` | PUBLIC | query: sessionId: String | `ApiResponse<String>` | [PasskeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L120) |
+| `POST` | `/auth/passkey/register` | `PasskeyController.registerPasskey` | AUTHENTICATED | body: PasskeyRegistrationRequest | `ApiResponse<String>` | [PasskeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L95) |
+| `POST` | `/auth/passkey/verify` | `PasskeyController.verifyAndLogin` | PUBLIC | body: PasskeyVerifyRequest | `ApiResponse<Object>` | [PasskeyController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/PasskeyController.java#L115) |
+| `GET` | `/auth/pow/challenge` | `UserController.getPowChallenge` | PUBLIC | none | `ApiResponse<Map<String, String>>` | [UserController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/UserController.java#L37) |
+| `POST` | `/auth/recovery/emergency/finish` | `EmergencyRecoveryController.finish` | PUBLIC | body: EmergencyRecoveryFinishRequest | `ApiResponse<EmergencyRecoveryFinishResponse>` | [EmergencyRecoveryController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/EmergencyRecoveryController.java#L53) |
+| `POST` | `/auth/recovery/emergency/start` | `EmergencyRecoveryController.start` | PUBLIC | body: EmergencyRecoveryStartRequest | `ApiResponse<EmergencyRecoveryStartResponse>` | [EmergencyRecoveryController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/EmergencyRecoveryController.java#L29) |
+| `GET` | `/auth/security-status` | `AccountSecurityStatusController.getStatus` | AUTHENTICATED | none | `ApiResponse<AccountSecurityStatusDTO>` | [AccountSecurityStatusController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AccountSecurityStatusController.java#L23) |
+| `GET` | `/auth/security/app-pin` | `AppPinController.getStatus` | AUTHENTICATED | header: X-Device-Hash (optional) | `ApiResponse<AppPinStatusDTO>` | [AppPinController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AppPinController.java#L29) |
+| `PUT` | `/auth/security/app-pin` | `AppPinController.configure` | AUTHENTICATED | header: X-Device-Hash (optional)<br>body: ConfigureAppPinRequestDTO | `ApiResponse<AppPinStatusDTO>` | [AppPinController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AppPinController.java#L37) |
+| `POST` | `/auth/security/app-pin/verify` | `AppPinController.verify` | AUTHENTICATED | header: X-Device-Hash (optional)<br>body: VerifyAppPinRequestDTO | `ApiResponse<AppPinStatusDTO>` | [AppPinController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AppPinController.java#L46) |
+| `GET` | `/auth/security/profile` | `AccountSecurityController.getProfile` | AUTHENTICATED | header: X-Device-Hash (optional) | `ApiResponse<AccountSecurityProfileDTO>` | [AccountSecurityController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AccountSecurityController.java#L47) |
+| `PUT` | `/auth/security/profile` | `AccountSecurityController.updateProfile` | AUTHENTICATED | header: X-Device-Hash (optional)<br>body: AccountSecurityUpdateRequestDTO | `ApiResponse<AccountSecurityProfileDTO>` | [AccountSecurityController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/AccountSecurityController.java#L62) |
+| `POST` | `/auth/signup` | `UserController.signup` | PUBLIC | body: UserDTO | `ApiResponse<SignupResponseDTO>` | [UserController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/UserController.java#L50) |
+| `POST` | `/auth/signup/totp/verify` | `UserController.verifySignupTotpCode` | PUBLIC | body: SignupTotpVerifyRequestDTO | `ApiResponse<String>` | [UserController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/UserController.java#L57) |
+| `DELETE` | `/auth/totp` | `TotpController.disable` | AUTHENTICATED | none | `ApiResponse<String>` | [TotpController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/TotpController.java#L45) |
+| `POST` | `/auth/totp/setup` | `TotpController.setup` | AUTHENTICATED | none | `ApiResponse<TotpSetupResponseDTO>` | [TotpController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/TotpController.java#L28) |
+| `POST` | `/auth/totp/verify` | `TotpController.verify` | AUTHENTICATED | body: Map<String, String> | `ApiResponse<BackupCodesStatusDTO>` | [TotpController.java](../../../auth-service/src/main/java/com/kerosene/auth/controller/TotpController.java#L35) |
 
 ## Guia detalhado de uso por endpoint
 
@@ -300,7 +300,7 @@ Status codes: `200` sucesso; `202` tentativa pendente ou aceita; `400` decisão/
 
 ### `AccountActivationStatusDTO`
 
-Fonte: [AccountActivationStatusDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/AccountActivationStatusDTO.java)
+Fonte: [AccountActivationStatusDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/AccountActivationStatusDTO.java)
 
 Campos observados no DTO:
 
@@ -316,7 +316,7 @@ Campos observados no DTO:
 
 ### `AccountSecurityProfileDTO`
 
-Fonte: [AccountSecurityProfileDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/AccountSecurityProfileDTO.java)
+Fonte: [AccountSecurityProfileDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/AccountSecurityProfileDTO.java)
 
 Campos observados no DTO:
 
@@ -332,7 +332,7 @@ Campos observados no DTO:
 
 ### `AccountSecurityStatusDTO`
 
-Fonte: [AccountSecurityStatusDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/AccountSecurityStatusDTO.java)
+Fonte: [AccountSecurityStatusDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/AccountSecurityStatusDTO.java)
 
 Campos observados no DTO:
 
@@ -348,7 +348,7 @@ Campos observados no DTO:
 
 ### `AccountSecurityUpdateRequestDTO`
 
-Fonte: [AccountSecurityUpdateRequestDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/AccountSecurityUpdateRequestDTO.java)
+Fonte: [AccountSecurityUpdateRequestDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/AccountSecurityUpdateRequestDTO.java)
 
 Campos observados no DTO:
 
@@ -359,7 +359,7 @@ Campos observados no DTO:
 
 ### `AdminAccessAttemptDTO`
 
-Fonte: [AdminAccessAttemptDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/AdminAccessAttemptDTO.java)
+Fonte: [AdminAccessAttemptDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/AdminAccessAttemptDTO.java)
 
 Campos observados no DTO:
 
@@ -375,7 +375,7 @@ Campos observados no DTO:
 
 ### `AdminAccessDecisionRequestDTO`
 
-Fonte: [AdminAccessDecisionRequestDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/AdminAccessDecisionRequestDTO.java)
+Fonte: [AdminAccessDecisionRequestDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/AdminAccessDecisionRequestDTO.java)
 
 Campos observados no DTO:
 
@@ -383,7 +383,7 @@ Campos observados no DTO:
 
 ### `AdminAuthenticatedDeviceDTO`
 
-Fonte: [AdminAuthenticatedDeviceDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/AdminAuthenticatedDeviceDTO.java)
+Fonte: [AdminAuthenticatedDeviceDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/AdminAuthenticatedDeviceDTO.java)
 
 Campos observados no DTO:
 
@@ -397,7 +397,7 @@ Campos observados no DTO:
 
 ### `AdminKeyCreateRequestDTO`
 
-Fonte: [AdminKeyCreateRequestDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/AdminKeyCreateRequestDTO.java)
+Fonte: [AdminKeyCreateRequestDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/AdminKeyCreateRequestDTO.java)
 
 Campos observados no DTO:
 
@@ -406,7 +406,7 @@ Campos observados no DTO:
 
 ### `AdminKeyStatusDTO`
 
-Fonte: [AdminKeyStatusDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/AdminKeyStatusDTO.java)
+Fonte: [AdminKeyStatusDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/AdminKeyStatusDTO.java)
 
 Campos observados no DTO:
 
@@ -418,7 +418,7 @@ Campos observados no DTO:
 
 ### `AdminLoginRequestDTO`
 
-Fonte: [AdminLoginRequestDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/AdminLoginRequestDTO.java)
+Fonte: [AdminLoginRequestDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/AdminLoginRequestDTO.java)
 
 Campos observados no DTO:
 
@@ -432,7 +432,7 @@ Campos observados no DTO:
 
 ### `AdminLoginResponseDTO`
 
-Fonte: [AdminLoginResponseDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/AdminLoginResponseDTO.java)
+Fonte: [AdminLoginResponseDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/AdminLoginResponseDTO.java)
 
 Campos observados no DTO:
 
@@ -445,7 +445,7 @@ Campos observados no DTO:
 
 ### `AppPinStatusDTO`
 
-Fonte: [AppPinStatusDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/AppPinStatusDTO.java)
+Fonte: [AppPinStatusDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/AppPinStatusDTO.java)
 
 Campos observados no DTO:
 
@@ -465,7 +465,7 @@ Campos observados no DTO:
 
 ### `BackupCodesStatusDTO`
 
-Fonte: [BackupCodesStatusDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/BackupCodesStatusDTO.java)
+Fonte: [BackupCodesStatusDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/BackupCodesStatusDTO.java)
 
 Campos observados no DTO:
 
@@ -475,7 +475,7 @@ Campos observados no DTO:
 
 ### `ConfigureAppPinRequestDTO`
 
-Fonte: [ConfigureAppPinRequestDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/ConfigureAppPinRequestDTO.java)
+Fonte: [ConfigureAppPinRequestDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/ConfigureAppPinRequestDTO.java)
 
 Campos observados no DTO:
 
@@ -486,7 +486,7 @@ Campos observados no DTO:
 
 ### `DeviceKeyChallengeResponse`
 
-Fonte: [DeviceKeyChallengeResponse.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/devicekey/DeviceKeyChallengeResponse.java)
+Fonte: [DeviceKeyChallengeResponse.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/devicekey/DeviceKeyChallengeResponse.java)
 
 Campos observados no DTO:
 
@@ -499,7 +499,7 @@ Campos observados no DTO:
 
 ### `DeviceKeyDeviceDTO`
 
-Fonte: [DeviceKeyDeviceDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/devicekey/DeviceKeyDeviceDTO.java)
+Fonte: [DeviceKeyDeviceDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/devicekey/DeviceKeyDeviceDTO.java)
 
 Campos observados no DTO:
 
@@ -519,7 +519,7 @@ Campos observados no DTO:
 
 ### `DeviceKeyRegistrationRequest`
 
-Fonte: [DeviceKeyRegistrationRequest.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/devicekey/DeviceKeyRegistrationRequest.java)
+Fonte: [DeviceKeyRegistrationRequest.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/devicekey/DeviceKeyRegistrationRequest.java)
 
 Campos observados no DTO:
 
@@ -540,7 +540,7 @@ Campos observados no DTO:
 
 ### `DeviceKeyVerifyRequest`
 
-Fonte: [DeviceKeyVerifyRequest.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/devicekey/DeviceKeyVerifyRequest.java)
+Fonte: [DeviceKeyVerifyRequest.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/devicekey/DeviceKeyVerifyRequest.java)
 
 Campos observados no DTO:
 
@@ -552,7 +552,7 @@ Campos observados no DTO:
 
 ### `EmergencyRecoveryFinishRequest`
 
-Fonte: [EmergencyRecoveryFinishRequest.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/EmergencyRecoveryFinishRequest.java)
+Fonte: [EmergencyRecoveryFinishRequest.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/EmergencyRecoveryFinishRequest.java)
 
 Campos observados no DTO:
 
@@ -569,7 +569,7 @@ Campos observados no DTO:
 
 ### `EmergencyRecoveryFinishResponse`
 
-Fonte: [EmergencyRecoveryFinishResponse.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/EmergencyRecoveryFinishResponse.java)
+Fonte: [EmergencyRecoveryFinishResponse.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/EmergencyRecoveryFinishResponse.java)
 
 Campos observados no DTO:
 
@@ -578,7 +578,7 @@ Campos observados no DTO:
 
 ### `EmergencyRecoveryStartRequest`
 
-Fonte: [EmergencyRecoveryStartRequest.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/EmergencyRecoveryStartRequest.java)
+Fonte: [EmergencyRecoveryStartRequest.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/EmergencyRecoveryStartRequest.java)
 
 Campos observados no DTO:
 
@@ -589,7 +589,7 @@ Campos observados no DTO:
 
 ### `EmergencyRecoveryStartResponse`
 
-Fonte: [EmergencyRecoveryStartResponse.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/EmergencyRecoveryStartResponse.java)
+Fonte: [EmergencyRecoveryStartResponse.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/EmergencyRecoveryStartResponse.java)
 
 Campos observados no DTO:
 
@@ -601,7 +601,7 @@ Campos observados no DTO:
 
 ### `PasskeyInventoryDTO`
 
-Fonte: [PasskeyInventoryDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/PasskeyInventoryDTO.java)
+Fonte: [PasskeyInventoryDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/PasskeyInventoryDTO.java)
 
 Campos observados no DTO:
 
@@ -614,7 +614,7 @@ Campos observados no DTO:
 
 ### `PasskeyRegistrationRequest`
 
-Fonte: [PasskeyRegistrationRequest.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/passkey/PasskeyRegistrationRequest.java)
+Fonte: [PasskeyRegistrationRequest.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/passkey/PasskeyRegistrationRequest.java)
 
 Campos observados no DTO:
 
@@ -637,7 +637,7 @@ Campos observados no DTO:
 
 ### `PasskeyVerifyRequest`
 
-Fonte: [PasskeyVerifyRequest.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/passkey/PasskeyVerifyRequest.java)
+Fonte: [PasskeyVerifyRequest.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/passkey/PasskeyVerifyRequest.java)
 
 Campos observados no DTO:
 
@@ -650,7 +650,7 @@ Campos observados no DTO:
 
 ### `DeviceAlreadyBoundDTO` (`AUTH_024`)
 
-Fonte: [DeviceAlreadyBoundDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/devicebinding/DeviceAlreadyBoundDTO.java)
+Fonte: [DeviceAlreadyBoundDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/devicebinding/DeviceAlreadyBoundDTO.java)
 
 - `action: String` — sempre `CONFIRM_UNLINK_DEVICE`
 - `deviceInstallId: String`
@@ -660,7 +660,7 @@ Fonte: [DeviceAlreadyBoundDTO.java](../../../backend/kerosene/auth-service/src/m
 
 ### `SignupResponseDTO`
 
-Fonte: [SignupResponseDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/SignupResponseDTO.java)
+Fonte: [SignupResponseDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/SignupResponseDTO.java)
 
 Campos observados no DTO:
 
@@ -671,7 +671,7 @@ Campos observados no DTO:
 
 ### `SignupTotpVerifyRequestDTO`
 
-Fonte: [SignupTotpVerifyRequestDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/SignupTotpVerifyRequestDTO.java)
+Fonte: [SignupTotpVerifyRequestDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/SignupTotpVerifyRequestDTO.java)
 
 Campos observados no DTO:
 
@@ -680,7 +680,7 @@ Campos observados no DTO:
 
 ### `TotpSetupResponseDTO`
 
-Fonte: [TotpSetupResponseDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/TotpSetupResponseDTO.java)
+Fonte: [TotpSetupResponseDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/TotpSetupResponseDTO.java)
 
 Campos observados no DTO:
 
@@ -689,7 +689,7 @@ Campos observados no DTO:
 
 ### `UserDTO`
 
-Fonte: [UserDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/UserDTO.java)
+Fonte: [UserDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/UserDTO.java)
 
 Campos observados no DTO:
 
@@ -709,7 +709,7 @@ Campos observados no DTO:
 
 ### `VerifyAppPinRequestDTO`
 
-Fonte: [VerifyAppPinRequestDTO.java](../../../backend/kerosene/auth-service/src/main/java/com/kerosene/auth/dto/VerifyAppPinRequestDTO.java)
+Fonte: [VerifyAppPinRequestDTO.java](../../../auth-service/src/main/java/com/kerosene/auth/dto/VerifyAppPinRequestDTO.java)
 
 Campos observados no DTO:
 

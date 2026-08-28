@@ -5,7 +5,6 @@ plugins {
     id("io.spring.dependency-management") version "1.1.6"
     // Supply Chain Defense: varre CVEs conhecidos em todas as dependências (NVD)
     id("org.owasp.dependencycheck") version "10.0.4"
-    id("com.google.protobuf") version "0.9.4"
     jacoco
 }
 
@@ -25,36 +24,13 @@ repositories {
 	mavenCentral()
 }
 
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:3.25.9"
-    }
-    plugins {
-        create("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.82.0"
-        }
-    }
-    generateProtoTasks {
-        all().forEach {
-            it.plugins {
-                create("grpc")
-            }
-        }
-    }
-}
-
 configurations.configureEach {
     exclude(group = "org.bouncycastle", module = "bcprov-jdk15to18")
 }
 
 dependencies {
-    implementation(project(":kerosene-contracts"))
-    implementation(project(":kerosene-shared"))
-    // Runtime: auth-service depends on kfe-service beans (AdminLedgerService, etc.)
-    // Flyway ownership is separate: auth migrations live in db/migration/auth/
-    implementation(project(":kfe-service"))
-    // Additional kfe classes needed by migration/architecture tests
-    testImplementation(project(":kfe-service"))
+    implementation("io.kerosene.contracts:kerosene-contracts:0.2.0-SNAPSHOT")
+    implementation("kerosene:kerosene-shared:PRE-ALPHA")
     implementation("io.jsonwebtoken:jjwt-api:0.13.0")
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
@@ -90,15 +66,11 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.tngtech.archunit:archunit-junit5:1.3.0")
 
-    // gRPC for LND rail protos
-    implementation("io.grpc:grpc-netty-shaded:1.82.0")
-    implementation("io.grpc:grpc-protobuf:1.82.0")
-    implementation("io.grpc:grpc-stub:1.82.0")
     implementation("org.bouncycastle:bcpkix-jdk18on:1.84")
     implementation("org.bouncycastle:bcprov-jdk18on:1.84")
     constraints {
         implementation("com.google.protobuf:protobuf-java:3.25.9") {
-            because("CVE-2024-7254 affects older protobuf-java runtimes")
+            because("CVE-2024-7254 affects the older version pulled transitively by bitcoinj")
         }
         implementation("io.netty:netty-codec-http2:4.2.6.Final") {
             because("CVE-2025-55163 affects older Netty HTTP/2 implementations")

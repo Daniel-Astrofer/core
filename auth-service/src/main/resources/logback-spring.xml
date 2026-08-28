@@ -45,31 +45,6 @@
         </encoder>
     </appender>
 
-    <!-- ─── KFE DOMAIN ───────────────────────────────────────────────── -->
-    <appender name="KFE" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
-                <marker>KFE</marker>
-            </evaluator>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <customFields>${COMMON_FIELDS}</customFields>
-            <includeMdc>true</includeMdc>
-            <includeContext>false</includeContext>
-            <shortenedLoggerNameLength>64</shortenedLoggerNameLength>
-            <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
-                <valueMasker class="com.kerosene.common.observability.SensitiveDataMasker"/>
-            </jsonGeneratorDecorator>
-            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
-                <maxDepthPerThrowable>20</maxDepthPerThrowable>
-                <maxLength>2048</maxLength>
-                <shortenedClassNameLength>40</shortenedClassNameLength>
-            </throwableConverter>
-        </encoder>
-    </appender>
-
     <!-- Startup/security/auth/integration-specific markers share the same structured encoder shape. -->
     <appender name="STARTUP" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
@@ -223,13 +198,6 @@
         <appender-ref ref="AUTH"/>
     </appender>
 
-    <appender name="ASYNC_KFE" class="ch.qos.logback.classic.AsyncAppender">
-        <queueSize>512</queueSize>
-        <discardingThreshold>0</discardingThreshold>
-        <includeCallerData>false</includeCallerData>
-        <appender-ref ref="KFE"/>
-    </appender>
-
     <appender name="ASYNC_STARTUP" class="ch.qos.logback.classic.AsyncAppender">
         <queueSize>256</queueSize>
         <discardingThreshold>0</discardingThreshold>
@@ -293,12 +261,6 @@
     <logger name="kerosene.security"                              level="INFO"  additivity="false">
         <appender-ref ref="ASYNC_SECURITY"/>
     </logger>
-
-    <!-- KFE: financial engine, lightning, on-chain -->
-    <logger name="com.kerosene.kfe"                                level="INFO"  additivity="false">
-        <appender-ref ref="ASYNC_KFE"/>
-    </logger>
-
 
     <logger name="com.kerosene.vault"                                   level="INFO"  additivity="false">
         <appender-ref ref="ASYNC_VAULT"/>
