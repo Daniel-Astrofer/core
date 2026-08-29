@@ -9,15 +9,15 @@ HTTP endpoint inventory. Ops docs: [`api/`](api/README.md). Finance: KFE-only (`
 | Auth/session/step-up | [`api/AUTH.md`](api/AUTH.md) |
 | KFE finance | [`api/KFE.md`](api/KFE.md) |
 | KFE audit | [`api/AUDIT.md`](api/AUDIT.md) |
-| Legacy wallet migrate | [`api/WALLET.md`](api/WALLET.md) |
-| Legacy payments migrate | [`api/PAYMENTS.md`](api/PAYMENTS.md) |
-| Economy/txn bridge | [`api/TRANSACTIONS.md`](api/TRANSACTIONS.md) |
 | Sovereignty/quorum | [`api/SOVEREIGNTY.md`](api/SOVEREIGNTY.md) |
-| Mining | [`api/MINING.md`](api/MINING.md) | STALE — controller removed |
 | Notifications | [`api/NOTIFICATIONS.md`](api/NOTIFICATIONS.md) |
 | Public/health/web | [`api/PUBLIC_HEALTH_WEB.md`](api/PUBLIC_HEALTH_WEB.md) |
 | Integrations | [`api/INTEGRATIONS.md`](api/INTEGRATIONS.md) |
 | DTO index | [`api/DTO_SCHEMA_INDEX.md`](api/DTO_SCHEMA_INDEX.md) |
+
+Removed wallet, payments and mining APIs are not active contracts and no
+longer appear as links in this index. Current financial routes are documented
+under KFE.
 
 ## Scope
 
@@ -451,87 +451,87 @@ HTTP endpoint inventory. Ops docs: [`api/`](api/README.md). Finance: KFE-only (`
 
 #### `GET /api/admin/kfe/audit/latest`
 - `KfeAuditAdminController.latest` · auth `JWT com ROLE_ADMIN` · → `ResponseEntity<ApiResponse<KfeAuditLatestResponse>>`
-- src: `kfe-service/src/main/java/com/kerosene/kfe/controller/KfeAuditAdminController.java:31`
+- src: `kerosene-kfe/src/main/java/com/kerosene/kfe/controller/KfeAuditAdminController.java:31`
 - headers: `Accept` (opt), `Authorization` (req)
 - resp keys: `success`, `message`, `data`, `timestamp`
 
 #### `GET /api/admin/kfe/audit/events`
 - `KfeAuditAdminController.events` · auth `JWT com ROLE_ADMIN` · → `ResponseEntity<ApiResponse<List<KfeAuditEventResponse>>>`
-- src: `kfe-service/src/main/java/com/kerosene/kfe/controller/KfeAuditAdminController.java:36`
+- src: `kerosene-kfe/src/main/java/com/kerosene/kfe/controller/KfeAuditAdminController.java:36`
 - headers: `Accept` (opt), `Authorization` (req)
 - query: limit (int, no)
 - resp keys: `success`, `message`, `data`, `timestamp`
 
 #### `GET /api/admin/kfe/audit/transactions/{transactionId}`
 - `KfeAuditAdminController.transactionEvents` · auth `JWT com ROLE_ADMIN` · → `ResponseEntity<ApiResponse<List<KfeAuditEventResponse>>>`
-- src: `kfe-service/src/main/java/com/kerosene/kfe/controller/KfeAuditAdminController.java:42`
+- src: `kerosene-kfe/src/main/java/com/kerosene/kfe/controller/KfeAuditAdminController.java:42`
 - headers: `Accept` (opt), `Authorization` (req)
 - path: `transactionId (UUID, yes)`
 - resp keys: `success`, `message`, `data`, `timestamp`
 
 #### `POST /api/admin/kfe/audit/root`
 - `KfeAuditAdminController.root` · auth `JWT com ROLE_ADMIN` · → `ResponseEntity<ApiResponse<KfeAuditRootResponse>>`
-- src: `kfe-service/src/main/java/com/kerosene/kfe/controller/KfeAuditAdminController.java:50`
+- src: `kerosene-kfe/src/main/java/com/kerosene/kfe/controller/KfeAuditAdminController.java:50`
 - headers: `Accept` (opt), `Authorization` (req)
 - resp keys: `success`, `message`, `data`, `timestamp`
 
 #### `GET /kfe/dashboard`
 - `KfeDashboardController.dashboard` · auth `JWT` · → `ResponseEntity<ApiResponse<KfeDashboardResponse>>`
-- src: `kfe-service/src/main/java/com/kerosene/kfe/controller/KfeDashboardController.java:22`
+- src: `kerosene-kfe/src/main/java/com/kerosene/kfe/controller/KfeDashboardController.java:22`
 - headers: `Accept` (opt), `Authorization` (req)
 - resp keys: `success`, `message`, `data`, `timestamp`
 
 #### `GET /kfe/users/{receiverIdentifier}/receiving-capabilities`
 - `KfeReceivingController.capabilities` · auth `JWT` · → `ResponseEntity<ApiResponse<KfeReceivingCapabilitiesResponse>>`
-- src: `kfe-service/src/main/java/com/kerosene/kfe/controller/KfeReceivingController.java:22`
+- src: `kerosene-kfe/src/main/java/com/kerosene/kfe/controller/KfeReceivingController.java:22`
 - headers: `Accept` (opt), `Authorization` (req)
 - path: `receiverIdentifier (string, yes)`
 - resp keys: `success`, `message`, `data`, `timestamp`
 
 #### `POST /kfe/transactions`
 - `KfeTransactionController.submit` · auth `JWT` · → `ResponseEntity<ApiResponse<KfeTransactionResponse>>`
-- src: `kfe-service/src/main/java/com/kerosene/kfe/controller/KfeTransactionController.java:38`
+- src: `kerosene-kfe/src/main/java/com/kerosene/kfe/controller/KfeTransactionController.java:38`
 - headers: `Accept` (opt), `Authorization` (req), `Content-Type` (req), `Digest` (opt)
 - body keys: `(see controller)`
 - resp keys: `success`, `message`, `data`, `timestamp`
 
 #### `GET /kfe/transactions/{transactionId}`
 - `KfeTransactionController.get` · auth `JWT` · → `ResponseEntity<ApiResponse<KfeTransactionResponse>>`
-- src: `kfe-service/src/main/java/com/kerosene/kfe/controller/KfeTransactionController.java:53`
+- src: `kerosene-kfe/src/main/java/com/kerosene/kfe/controller/KfeTransactionController.java:53`
 - headers: `Accept` (opt), `Authorization` (req)
 - path: `transactionId (UUID, yes)`
 - resp keys: `success`, `message`, `data`, `timestamp`
 
 #### `POST /kfe/wallets`
 - `KfeWalletController.create` · auth `JWT` · → `ResponseEntity<ApiResponse<KfeWalletResponse>>`
-- src: `kfe-service/src/main/java/com/kerosene/kfe/controller/KfeWalletController.java:40`
+- src: `kerosene-kfe/src/main/java/com/kerosene/kfe/controller/KfeWalletController.java:40`
 - headers: `Accept` (opt), `Authorization` (req), `Content-Type` (req), `Digest` (opt)
 - body keys: `(see controller)`
 - resp keys: `success`, `message`, `data`, `timestamp`
 
 #### `GET /kfe/wallets`
 - `KfeWalletController.list` · auth `JWT` · → `ResponseEntity<ApiResponse<List<KfeWalletResponse>>>`
-- src: `kfe-service/src/main/java/com/kerosene/kfe/controller/KfeWalletController.java:49`
+- src: `kerosene-kfe/src/main/java/com/kerosene/kfe/controller/KfeWalletController.java:49`
 - headers: `Accept` (opt), `Authorization` (req)
 - resp keys: `success`, `message`, `data`, `timestamp`
 
 #### `POST /kfe/wallets/{walletId}/addresses/rotate`
 - `KfeWalletController.rotateAddress` · auth `JWT` · → `ResponseEntity<ApiResponse<KfeAddressResponse>>`
-- src: `kfe-service/src/main/java/com/kerosene/kfe/controller/KfeWalletController.java:56`
+- src: `kerosene-kfe/src/main/java/com/kerosene/kfe/controller/KfeWalletController.java:56`
 - headers: `Accept` (opt), `Authorization` (req)
 - path: `walletId (UUID, yes)`
 - resp keys: `success`, `message`, `data`, `timestamp`
 
 #### `GET /kfe/wallets/{walletId}/utxos`
 - `KfeWalletController.listUtxos` · auth `JWT` · → `ResponseEntity<ApiResponse<List<KfeUtxoResponse>>>`
-- src: `kfe-service/src/main/java/com/kerosene/kfe/controller/KfeWalletController.java:65`
+- src: `kerosene-kfe/src/main/java/com/kerosene/kfe/controller/KfeWalletController.java:65`
 - headers: `Accept` (opt), `Authorization` (req)
 - path: `walletId (UUID, yes)`
 - resp keys: `success`, `message`, `data`, `timestamp`
 
 #### `POST /kfe/wallets/{walletId}/cold-wallet/psbt`
 - `KfeWalletController.createColdWalletPsbt` · auth `JWT` · → `ResponseEntity<ApiResponse<KfeColdWalletPsbtResponse>>`
-- src: `kfe-service/src/main/java/com/kerosene/kfe/controller/KfeWalletController.java:74`
+- src: `kerosene-kfe/src/main/java/com/kerosene/kfe/controller/KfeWalletController.java:74`
 - headers: `Accept` (opt), `Authorization` (req), `Content-Type` (req), `Digest` (opt)
 - path: `walletId (UUID, yes)`
 - body keys: `(see controller)`

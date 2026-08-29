@@ -4,7 +4,9 @@ Per-domain ops docs for FE/mobile/QA. Auth, headers, body, responses, removed/re
 
 Inventory: `docs/backend/API_REFERENCE.md` (does not replace domain docs).
 
-Source: controllers, DTOs, `EndpointPolicyRegistry`, security under `backend/kerosene/` (`com.kerosene.*`; KFE domain `com.kerosene.kfe`).
+Auth source: controllers and DTOs under `auth-service/`, plus
+`EndpointPolicyRegistry`, security configuration and `@PreAuthorize` rules.
+KFE API documentation is owned by the `kerosene-kfe` repository.
 
 ## KFE-only
 
@@ -22,21 +24,18 @@ Old finance routes only as `STALE` / `CONTROLLER_ABSENT` / `REMOVED` / migrate n
 | Service | File | State |
 | --- | --- | --- |
 | Admin ops | — | Outside public repo |
-| Audit | [AUDIT.md](AUDIT.md) | `4` live `/api/admin/kfe/audit/**`; old `/audit/**`, `/v1/audit/**` stale |
 | Auth | [AUTH.md](AUTH.md) | login, TOTP, passkey, PIN, device-key, recovery, admin |
-| Bitcoin accounts | [BITCOIN_ACCOUNTS.md](BITCOIN_ACCOUNTS.md) | no controller; → KFE wallet/UTXO/PSBT |
 | Integrations | [INTEGRATIONS.md](INTEGRATIONS.md) | BTCPay policy; no controller; stale |
-| KFE | [KFE.md](KFE.md) | wallet, dashboard, receive, tx, quote, PSBT, audit |
-| Ledger | [LEDGER.md](LEDGER.md) | no controller; → KFE |
-| Mining | [MINING.md](MINING.md) | STALE — controller removed |
+| KFE | `kerosene-kfe/docs/reference/api/KFE.md` | wallet, dashboard, receive, tx, quote, PSBT, audit |
 | Notifications | [NOTIFICATIONS.md](NOTIFICATIONS.md) | live |
-| Payments | [PAYMENTS.md](PAYMENTS.md) | via KFE receive+tx; legacy removed |
 | Public/health/web | [PUBLIC_HEALTH_WEB.md](PUBLIC_HEALTH_WEB.md) | public, health, web, actuator |
 | Sovereignty | [SOVEREIGNTY.md](SOVEREIGNTY.md) | `7` live; HMAC + admin token |
-| Transactions/economy | [TRANSACTIONS.md](TRANSACTIONS.md) | `2` Economy + KFE tx refs |
 | Treasury / vault mesh | [PUBLIC_HEALTH_WEB.md](PUBLIC_HEALTH_WEB.md), [INFRASTRUCTURE.md](../INFRASTRUCTURE.md) | no legacy treasury controller; custody = vault mesh (`/api/admin/operations/vault-mesh`, mesh `/v1/health`) |
-| Wallet | [WALLET.md](WALLET.md) | `/wallet/**` gone; use KFE |
 | DTO index | [DTO_SCHEMA_INDEX.md](DTO_SCHEMA_INDEX.md) | aux only |
+
+Bitcoin accounts, ledger, mining, payments, transactions and wallet documents
+from the former monorepo are not present because those routes are not active
+contracts. Use the KFE document for current financial APIs.
 
 ## Read rules
 
