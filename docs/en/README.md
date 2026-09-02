@@ -17,6 +17,7 @@ runtime utilities live in `kerosene-shared`.
 
 - [Status](STATUS.md)
 - [Module boundaries and migration gates](MODULE_BOUNDARIES.md)
+- [Auth/KFE workload identity](AUTH_KFE_WORKLOAD_IDENTITY.md)
 - [Repository boundary](../REPOSITORY_BOUNDARY.md)
 - [API index](../backend/api/README.md)
 - [API inventory](../backend/API_REFERENCE.md)

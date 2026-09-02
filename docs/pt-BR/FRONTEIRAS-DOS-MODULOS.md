@@ -16,7 +16,7 @@ futura e não autoriza mudanças de protocolo ou comportamento.
 ## Dependências observadas hoje
 
 ```text
-Core/Auth -- HTTP ---> kerosene-kfe irmão (fronteira de runtime)
+Core/Auth -- HTTPS/mTLS SPIFFE ---> kerosene-kfe irmão (fronteira de runtime)
 Core/Auth + KFE ------> kerosene-shared irmão
 Core/Auth/KFE/Shared -> kerosene-contracts irmão
 kerosene-admin          repositório independente

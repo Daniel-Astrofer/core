@@ -47,6 +47,7 @@ public class BooleanPropertyProductionSafetyCheck extends AbstractProductionSafe
         requireTrue(context, "tor.health.required", false);
         requireTrue(context, "release.attestation.required", false);
         requireTrue(context, "release.attestation.remote.enabled", false);
+        requireTrue(context, "kerosene.workload-identity.enabled", false);
         if (!(meshOnly || meshEnabled)) {
             requireTrue(context, "quorum.psbt.require-signer-identity", true);
         }

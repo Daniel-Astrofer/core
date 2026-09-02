@@ -16,7 +16,7 @@ promise and does not authorize protocol or behavior changes.
 ## Dependency direction observed today
 
 ```text
-Core/Auth -- HTTP ---> sibling kerosene-kfe (runtime boundary)
+Core/Auth -- SPIFFE mTLS/HTTPS ---> sibling kerosene-kfe (runtime boundary)
 Core/Auth + KFE ------> sibling kerosene-shared
 Core/Auth/KFE/Shared -> sibling kerosene-contracts
 kerosene-admin          independent repository

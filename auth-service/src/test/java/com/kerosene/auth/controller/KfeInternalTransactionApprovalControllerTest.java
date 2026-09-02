@@ -28,12 +28,11 @@ class KfeInternalTransactionApprovalControllerTest {
 
     private final FinancialTransactionApprovalPort approvalPort = mock(FinancialTransactionApprovalPort.class);
     private final KfeInternalTransactionApprovalController controller =
-            new KfeInternalTransactionApprovalController(approvalPort, "credential");
+            new KfeInternalTransactionApprovalController(approvalPort);
 
     @Test
     void approvesLocalFactorWhenCredentialMatches() {
         controller.approveLocalFactor(
-                "credential",
                 new FinancialLocalFactorApprovalRequest(42L, "device", DEVICE_PROOF));
 
         verify(approvalPort).approveLocalFactor(42L, "device", DEVICE_PROOF);
@@ -42,7 +41,6 @@ class KfeInternalTransactionApprovalControllerTest {
     @Test
     void approvesCustodyTransferWhenCredentialMatches() {
         controller.approveCustodyTransfer(
-                "credential",
                 new FinancialCustodyTransferApprovalRequest(42L, PASSKEY));
 
         verify(approvalPort).approveCustodyTransfer(42L, PASSKEY);
@@ -51,7 +49,6 @@ class KfeInternalTransactionApprovalControllerTest {
     @Test
     void approvesWalletOutboundWhenCredentialMatches() {
         controller.approveWalletOutbound(
-                "credential",
                 new FinancialWalletOutboundApprovalRequest(41L, 42L, PASSKEY, RECOVERY, DEVICE_PROOF));
 
         verify(approvalPort).approveWalletOutbound(41L, 42L, PASSKEY, RECOVERY, DEVICE_PROOF);
@@ -60,19 +57,9 @@ class KfeInternalTransactionApprovalControllerTest {
     @Test
     void approvesColdWalletPsbtWhenCredentialMatches() {
         controller.approveColdWalletPsbt(
-                "credential",
                 new FinancialColdWalletPsbtApprovalRequest(42L, DEVICE_PROOF));
 
         verify(approvalPort).approveColdWalletPsbt(42L, DEVICE_PROOF);
-    }
-
-    @Test
-    void rejectsInvalidCredential() {
-        assertThrows(
-                ResponseStatusException.class,
-                () -> controller.approveLocalFactor(
-                        "wrong",
-                        new FinancialLocalFactorApprovalRequest(42L, "device", DEVICE_PROOF)));
     }
 
     @Test
@@ -80,7 +67,6 @@ class KfeInternalTransactionApprovalControllerTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> controller.approveLocalFactor(
-                        "credential",
                         new FinancialLocalFactorApprovalRequest(null, "device", DEVICE_PROOF)));
     }
 }

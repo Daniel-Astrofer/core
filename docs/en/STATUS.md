@@ -1,12 +1,12 @@
 # Status
 
-Last reviewed: 2026-08-28.
+Last reviewed: 2026-09-01.
 
 | Area | State | Evidence / next action |
 | --- | --- | --- |
 | Auth service | Implemented | Source and tests are under `auth-service/`. Keep its public and internal APIs documented in `docs/backend/api/`. |
-| KFE service | Extracted, integration pending | Source, tests and financial docs are in sibling `kerosene-kfe`. Validate Vault Mesh and Node integrations before production. |
-| Auth/KFE boundary | Source and build split complete | Core has no KFE implementation dependency. Publish immutable Contracts versions and keep remote contract tests. |
+| KFE service | Extracted | Source, tests and financial docs are in sibling `kerosene-kfe`. Vault Mesh and Node integration remain separate production blockers. |
+| Auth/KFE boundary | Native SPIFFE mTLS implemented; cluster rollout pending | Auth uses a dedicated TLS 1.3 internal connector and pins the exact KFE SPIFFE ID. See `AUTH_KFE_WORKLOAD_IDENTITY.md`; an in-cluster handshake is still required before activation. |
 | Shared runtime | Extracted | `kerosene-shared` owns neutral Java utilities; class ownership audit remains pending. |
 | API documentation | Partial | Active indexes exist; endpoint inventories require automated drift checks against controllers. |
 | Cross-repository contracts | Extracted | Core consumes canonical sibling `kerosene-contracts` through Gradle composite substitution. Replace `0.2.0-SNAPSHOT` with an immutable production release. |

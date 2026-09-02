@@ -16,7 +16,7 @@ class KfeInternalFinancialNotificationControllerTest {
 
     private final FinancialNotificationPort notificationPort = mock(FinancialNotificationPort.class);
     private final KfeInternalFinancialNotificationController controller =
-            new KfeInternalFinancialNotificationController(notificationPort, "credential");
+            new KfeInternalFinancialNotificationController(notificationPort);
 
     @Test
     void forwardsDepositConfirmedNotificationWhenCredentialMatches() {
@@ -24,7 +24,6 @@ class KfeInternalFinancialNotificationControllerTest {
         UUID walletId = UUID.randomUUID();
 
         controller.notifyDepositConfirmed(
-                "credential",
                 new FinancialDepositConfirmedNotificationRequest(
                         42L,
                         transactionId,
@@ -42,7 +41,6 @@ class KfeInternalFinancialNotificationControllerTest {
         UUID walletId = UUID.randomUUID();
 
         controller.notifyDepositDetected(
-                "credential",
                 new FinancialDepositConfirmedNotificationRequest(
                         42L,
                         transactionId,
@@ -60,7 +58,6 @@ class KfeInternalFinancialNotificationControllerTest {
         UUID walletId = UUID.randomUUID();
 
         controller.notifyPaymentRequestDepositConfirmed(
-                "credential",
                 new FinancialPaymentRequestDepositConfirmedNotificationRequest(
                         42L,
                         transactionId,
@@ -71,7 +68,6 @@ class KfeInternalFinancialNotificationControllerTest {
                         1500L));
 
         controller.notifyDepositConfirmationProgress(
-                "credential",
                 new FinancialDepositConfirmedNotificationRequest(
                         42L,
                         transactionId,
@@ -90,7 +86,6 @@ class KfeInternalFinancialNotificationControllerTest {
         UUID walletId = UUID.randomUUID();
 
         controller.notifyPaymentRequestDepositConfirmed(
-                "credential",
                 new FinancialPaymentRequestDepositConfirmedNotificationRequest(
                         42L,
                         transactionId,
@@ -111,26 +106,10 @@ class KfeInternalFinancialNotificationControllerTest {
     }
 
     @Test
-    void rejectsInvalidCredential() {
-        assertThrows(
-                ResponseStatusException.class,
-                () -> controller.notifyDepositConfirmed(
-                        "wrong",
-                        new FinancialDepositConfirmedNotificationRequest(
-                                42L,
-                                UUID.randomUUID(),
-                                UUID.randomUUID(),
-                                "ONCHAIN",
-                                1500L,
-                                3)));
-    }
-
-    @Test
     void rejectsMissingUserId() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> controller.notifyDepositConfirmed(
-                        "credential",
                         new FinancialDepositConfirmedNotificationRequest(
                                 null,
                                 UUID.randomUUID(),
