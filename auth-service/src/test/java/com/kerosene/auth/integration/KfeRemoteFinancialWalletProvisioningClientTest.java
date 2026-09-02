@@ -1,7 +1,8 @@
 package com.kerosene.auth.integration;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import com.kerosene.common.security.workload.InternalServiceRestTemplateFactory;
+import com.kerosene.common.security.workload.WorkloadIdentityProperties;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -20,9 +21,8 @@ class KfeRemoteFinancialWalletProvisioningClientTest {
     @Test
     void postsPrimaryWalletProvisioningRequestToKfe() throws Exception {
         KfeRemoteFinancialWalletProvisioningClient client = new KfeRemoteFinancialWalletProvisioningClient(
-                new RestTemplateBuilder(),
+                legacyClientFactory("credential"),
                 "http://kfe.test",
-                "credential",
                 100,
                 100);
         MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate(client));
@@ -40,9 +40,8 @@ class KfeRemoteFinancialWalletProvisioningClientTest {
     @Test
     void postsPrimaryWalletRepairRequestWithoutInitialAddress() throws Exception {
         KfeRemoteFinancialWalletProvisioningClient client = new KfeRemoteFinancialWalletProvisioningClient(
-                new RestTemplateBuilder(),
+                legacyClientFactory("credential"),
                 "http://kfe.test",
-                "credential",
                 100,
                 100);
         MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate(client));
@@ -60,9 +59,8 @@ class KfeRemoteFinancialWalletProvisioningClientTest {
     @Test
     void rejectsMissingInternalCredentialBeforeCallingKfe() {
         KfeRemoteFinancialWalletProvisioningClient client = new KfeRemoteFinancialWalletProvisioningClient(
-                new RestTemplateBuilder(),
+                legacyClientFactory(""),
                 "http://kfe.test",
-                "",
                 100,
                 100);
 
@@ -73,5 +71,10 @@ class KfeRemoteFinancialWalletProvisioningClientTest {
         Field field = KfeRemoteClientSupport.class.getDeclaredField("restTemplate");
         field.setAccessible(true);
         return (RestTemplate) field.get(client);
+    }
+
+    private InternalServiceRestTemplateFactory legacyClientFactory(String secret) {
+        return new InternalServiceRestTemplateFactory(
+                new WorkloadIdentityProperties().toConfig(), null, secret);
     }
 }

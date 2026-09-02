@@ -1,7 +1,8 @@
 package com.kerosene.auth.integration;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import com.kerosene.common.security.workload.InternalServiceRestTemplateFactory;
+import com.kerosene.common.security.workload.WorkloadIdentityProperties;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -51,9 +52,9 @@ class KfeRemoteFinancialRailHealthClientTest {
 
     private KfeRemoteFinancialRailHealthClient client() {
         return new KfeRemoteFinancialRailHealthClient(
-                new RestTemplateBuilder(),
+                new InternalServiceRestTemplateFactory(
+                        new WorkloadIdentityProperties().toConfig(), null, "credential"),
                 "http://kfe.test",
-                "credential",
                 100,
                 100);
     }

@@ -17,6 +17,7 @@ utilitários Java neutros pertencem ao `kerosene-shared`.
 
 - [Estado atual e pendências](STATUS.md)
 - [Fronteiras dos módulos e critérios de migração](FRONTEIRAS-DOS-MODULOS.md)
+- [Identidade de workload Auth/KFE](IDENTIDADE-DE-WORKLOAD-AUTH-KFE.md)
 - [Limites do repositório](../REPOSITORY_BOUNDARY.md)
 - [Índice das APIs](../backend/api/README.md)
 - [Inventário das APIs](../backend/API_REFERENCE.md)

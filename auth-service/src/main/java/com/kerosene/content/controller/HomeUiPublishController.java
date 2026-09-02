@@ -2,12 +2,10 @@ package com.kerosene.content.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,15 +17,13 @@ import com.kerosene.content.service.HomeSurfaceComposer;
 import com.kerosene.content.service.HomeUiOverrideService;
 import com.kerosene.content.service.HomeUiPushService;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.time.Instant;
 import java.util.Locale;
 import java.util.Map;
 
 /**
  * Internal ops endpoint for publishing home UI overrides and live pushes.
- * Auth: X-KFE-Internal-Secret (same pattern as other internal KFE routes).
+ * The shared internal filter authenticates the calling KFE workload.
  */
 @RestController
 @RequestMapping("/internal/content/home-ui")
@@ -37,26 +33,21 @@ public class HomeUiPublishController {
     private final HomeSurfaceComposer surfaceComposer;
     private final HomeUiPushService pushService;
     private final ObjectMapper objectMapper;
-    private final String internalSecret;
 
     public HomeUiPublishController(
             HomeUiOverrideService overrideService,
             HomeSurfaceComposer surfaceComposer,
             HomeUiPushService pushService,
-            ObjectMapper objectMapper,
-            @Value("${kfe.internal.shared-secret:}") String internalSecret) {
+            ObjectMapper objectMapper) {
         this.overrideService = overrideService;
         this.surfaceComposer = surfaceComposer;
         this.pushService = pushService;
         this.objectMapper = objectMapper;
-        this.internalSecret = internalSecret;
     }
 
     @PostMapping("/publish")
     public ResponseEntity<ApiResponse<Map<String, Object>>> publish(
-            @RequestHeader(name = "X-KFE-Internal-Secret", required = false) String credential,
             @RequestBody HomeUiPublishRequestDTO request) {
-        verifyCredential(credential);
         require(request != null, "request is required");
         String action = request.action() == null ? "" : request.action().trim().toUpperCase(Locale.ROOT);
 
@@ -176,24 +167,6 @@ public class HomeUiPublishController {
             return value.trim();
         }
         return fallback;
-    }
-
-    private void verifyCredential(String credential) {
-        if (internalSecret == null || internalSecret.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Internal secret not configured");
-        }
-        if (credential == null || credential.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing internal credential");
-        }
-        if (!constantTimeEquals(internalSecret, credential)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid internal credential");
-        }
-    }
-
-    private static boolean constantTimeEquals(String expected, String provided) {
-        byte[] a = expected.getBytes(StandardCharsets.UTF_8);
-        byte[] b = provided.getBytes(StandardCharsets.UTF_8);
-        return MessageDigest.isEqual(a, b);
     }
 
     private static void require(boolean condition, String message) {

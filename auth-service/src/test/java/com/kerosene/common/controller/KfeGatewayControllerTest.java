@@ -1,9 +1,8 @@
 package com.kerosene.common.controller;
 
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -11,8 +10,6 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.SocketTimeoutException;
-import java.util.Collections;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,23 +24,7 @@ class KfeGatewayControllerTest {
     @BeforeEach
     void setUp() {
         restTemplate = mock(RestTemplate.class);
-        controller = new KfeGatewayController(
-                "http://kfe-service:8080",
-                "test-secret",
-                3000,
-                30000);
-        // Inject mock via reflection since constructor creates its own RestTemplate
-        injectRestTemplate(restTemplate);
-    }
-
-    private void injectRestTemplate(RestTemplate rt) {
-        try {
-            var field = KfeGatewayController.class.getDeclaredField("restTemplate");
-            field.setAccessible(true);
-            field.set(controller, rt);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        controller = new KfeGatewayController(restTemplate, "http://kfe-service:8080");
     }
 
     @Test
@@ -84,5 +65,34 @@ class KfeGatewayControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).contains("success");
+    }
+
+    @Test
+    void proxiesPublicAndAdminNamespacesWithoutChangingTheirPaths() {
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(), eq(String.class)))
+                .thenReturn(org.springframework.http.ResponseEntity.ok("{}"));
+
+        controller.proxy(new MockHttpServletRequest("GET", "/api/public/kfe/payment-requests/id"));
+        controller.proxy(new MockHttpServletRequest("GET", "/api/admin/kfe/audit/latest"));
+
+        ArgumentCaptor<String> urls = ArgumentCaptor.forClass(String.class);
+        org.mockito.Mockito.verify(restTemplate, org.mockito.Mockito.times(2))
+                .exchange(urls.capture(), any(HttpMethod.class), any(), eq(String.class));
+        assertThat(urls.getAllValues()).containsExactly(
+                "http://kfe-service:8080/api/public/kfe/payment-requests/id",
+                "http://kfe-service:8080/api/admin/kfe/audit/latest");
+    }
+
+    @Test
+    void translatesPublicKfeReadinessToTheInternalHealthEndpoint() {
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(), eq(String.class)))
+                .thenReturn(org.springframework.http.ResponseEntity.ok("{}"));
+
+        controller.proxy(new MockHttpServletRequest("GET", "/kfe/health/ready"));
+
+        ArgumentCaptor<String> url = ArgumentCaptor.forClass(String.class);
+        org.mockito.Mockito.verify(restTemplate)
+                .exchange(url.capture(), eq(HttpMethod.GET), any(), eq(String.class));
+        assertThat(url.getValue()).isEqualTo("http://kfe-service:8080/health/ready");
     }
 }

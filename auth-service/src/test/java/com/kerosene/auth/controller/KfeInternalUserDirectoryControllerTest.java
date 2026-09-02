@@ -19,7 +19,7 @@ class KfeInternalUserDirectoryControllerTest {
 
     private final FinancialUserDirectoryPort userDirectory = mock(FinancialUserDirectoryPort.class);
     private final KfeInternalUserDirectoryController controller =
-            new KfeInternalUserDirectoryController(userDirectory, "credential");
+            new KfeInternalUserDirectoryController(userDirectory);
 
     @Test
     void resolvesOnlyMinimalFinancialUserHandleByUsername() {
@@ -28,7 +28,6 @@ class KfeInternalUserDirectoryControllerTest {
         when(userDirectory.findByUsername(" Alice ")).thenReturn(Optional.of(handle));
 
         var response = controller.lookup(
-                "credential",
                 FinancialUserDirectoryLookupRequest.byUsername(" Alice "));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -44,7 +43,6 @@ class KfeInternalUserDirectoryControllerTest {
         when(userDirectory.findById(42L)).thenReturn(Optional.of(handle));
 
         var response = controller.lookup(
-                "credential",
                 FinancialUserDirectoryLookupRequest.byUserId(42L));
 
         assertEquals(handle, response.getBody().getData());
@@ -56,7 +54,6 @@ class KfeInternalUserDirectoryControllerTest {
         when(userDirectory.findByUsername("missing")).thenReturn(Optional.empty());
 
         var response = controller.lookup(
-                "credential",
                 FinancialUserDirectoryLookupRequest.byUsername("missing"));
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -64,22 +61,10 @@ class KfeInternalUserDirectoryControllerTest {
     }
 
     @Test
-    void rejectsInvalidCredentialBeforeLookup() {
-        ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
-                () -> controller.lookup(
-                        "wrong",
-                        FinancialUserDirectoryLookupRequest.byUsername("alice")));
-
-        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());
-    }
-
-    @Test
     void rejectsAmbiguousLookup() {
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
                 () -> controller.lookup(
-                        "credential",
                         new FinancialUserDirectoryLookupRequest("alice", 42L)));
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
