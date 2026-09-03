@@ -40,7 +40,9 @@ public class BooleanPropertyProductionSafetyCheck extends AbstractProductionSafe
             }
         }
 
-        requireTrue(context, "lightning.lnd.enabled", false);
+        if (context.environment().getProperty("lightning.lnd.enabled", Boolean.class, false)) {
+            context.addViolation("lightning.lnd.enabled must be false until Lightning custody is threshold-distributed");
+        }
         requireTrue(context, "bitcoin.rpc.enabled", false);
         requireTrue(context, "bitcoin.rpc.required", false);
         requireTrue(context, "bitcoin.rpc.pruned-required", false);

@@ -1,3 +1,12 @@
+<!--
+Kerosene documentation metadata
+status: review-required
+audience: internal
+owner: core
+source_of_truth: core
+last_reviewed: 2026-09-03
+-->
+
 # Kerosene Core (Auth gateway)
 
 Java/Spring identity, session, notification and public gateway service.
@@ -17,12 +26,16 @@ Auth and KFE have separate source repositories and builds. Auth communicates
 with KFE through remote clients and canonical contracts; the Core build no
 longer consumes KFE implementation classes.
 
-Documentation: [English](docs/en/README.md) ·
-[Português (Brasil)](docs/pt-BR/README.md)
+Documentation: [English](../en/README.md) ·
+[Português (Brasil)](../pt-BR/README.md) ·
+[documentation portal](docs/README.md) ·
+[status](../STATUS.md) ·
+[API catalog](../reference/API_CATALOG.md) ·
+[quickstart](../QUICKSTART.md)
 
 Module ownership and extraction gates:
-[English](docs/en/MODULE_BOUNDARIES.md) ·
-[Português (Brasil)](docs/pt-BR/FRONTEIRAS-DOS-MODULOS.md)
+[English](../en/MODULE_BOUNDARIES.md) ·
+[Português (Brasil)](../pt-BR/FRONTEIRAS-DOS-MODULOS.md)
 
 KFE-specific architecture and runbooks are owned by `kerosene-kfe`.
 

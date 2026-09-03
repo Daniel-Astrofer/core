@@ -565,10 +565,9 @@ public class PasskeyOrchestrator {
         state.setPasskeyBrowser(request.getBrowser());
         state.setPasskeyRegistered(true);
 
-        signupStateStore.saveSignupState(sessionId, state, Duration.ofMinutes(1440));
-
         UserDataBase user;
         try {
+            signupStateStore.saveSignupState(sessionId, state, Duration.ofMinutes(1440));
             user = finalizeSignupAccount.execute(sessionId);
         } catch (FinancialProviderUnavailableException
                  | FinalizeSignupAccount.VaultNotReadyException exception) {

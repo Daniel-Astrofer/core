@@ -8,6 +8,10 @@ public class TextPropertyProductionSafetyCheck extends AbstractProductionSafetyC
 
     @Override
     protected void inspect(ProductionSafetyContext context) {
+        String bitcoinNetwork = context.environment().getProperty("bitcoin.network", "");
+        if (!"testnet3".equalsIgnoreCase(bitcoinNetwork) && !"testnet".equalsIgnoreCase(bitcoinNetwork)) {
+            context.addViolation("bitcoin.network must be testnet3");
+        }
         String corsOrigins = context.environment().getProperty("app.cors.allowed-origins", "");
         if (corsOrigins.isBlank()) {
             context.addViolation("app.cors.allowed-origins must be configured");
@@ -58,8 +62,6 @@ public class TextPropertyProductionSafetyCheck extends AbstractProductionSafetyC
         }
 
         java.util.List<String> required = new java.util.ArrayList<>(java.util.List.of(
-                "lightning.lnd.host",
-                "lightning.lnd.tls.cert-path",
                 "bitcoin.platform.master-xpub",
                 "shard.attestation.secret"));
         if (!(meshOnly || meshEnabled)) {
@@ -72,10 +74,17 @@ public class TextPropertyProductionSafetyCheck extends AbstractProductionSafetyC
             }
         }
 
-        String macaroon = context.environment().getProperty("lightning.lnd.macaroon", "");
-        String macaroonPath = context.environment().getProperty("lightning.lnd.macaroon-path", "");
-        if (macaroon.isBlank() && macaroonPath.isBlank()) {
-            context.addViolation("lightning.lnd.macaroon or lightning.lnd.macaroon-path must be configured");
+        if (context.environment().getProperty("lightning.lnd.enabled", Boolean.class, false)) {
+            for (String propertyName : java.util.List.of("lightning.lnd.host", "lightning.lnd.tls.cert-path")) {
+                if (context.environment().getProperty(propertyName, "").isBlank()) {
+                    context.addViolation(propertyName + " must be configured");
+                }
+            }
+            String macaroon = context.environment().getProperty("lightning.lnd.macaroon", "");
+            String macaroonPath = context.environment().getProperty("lightning.lnd.macaroon-path", "");
+            if (macaroon.isBlank() && macaroonPath.isBlank()) {
+                context.addViolation("lightning.lnd.macaroon or lightning.lnd.macaroon-path must be configured");
+            }
         }
     }
 
