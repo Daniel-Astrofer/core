@@ -1,9 +1,7 @@
 package com.kerosene.common.admin.cell;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectReader;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.Signature;
@@ -21,8 +19,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CellEvidenceVerifier {
     public static final String ENVELOPE = "kerosene.bank-release-observations/v1";
-    private final ObjectMapper mapper = new ObjectMapper().enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION)
-            .enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+    private final ObjectReader mapper = com.kerosene.config.ReleaseJsonConfig.reader();
     private final CellOperationsProperties config;
     public CellEvidenceVerifier(CellOperationsProperties config) { this.config = config; }
 
@@ -136,7 +133,9 @@ public class CellEvidenceVerifier {
         return result;
     }
 
-    private Object safe(JsonNode node) { return node.isMissingNode() || node.isNull() ? Map.of() : mapper.convertValue(node, Object.class); }
+    private Object safe(JsonNode node) throws java.io.IOException {
+        return node.isMissingNode() || node.isNull() ? Map.of() : mapper.forType(Object.class).readValue(node);
+    }
     private boolean freshTime(String value, Instant now) {
         return freshTime(value, now, config.maximumAgeSeconds);
     }

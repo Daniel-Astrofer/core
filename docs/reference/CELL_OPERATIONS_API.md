@@ -53,8 +53,10 @@ Node `signer-keys` and Bank `bank-keys`, plus an allowlist of Bank observer IDs.
 Signatures cover recursively sorted, compact UTF-8 JSON excluding only their
 own `signatures` field, as specified in Contracts, not arbitrary base64 payload
 bytes. Core verifies both layers, exact release/network/sequence/digest binding,
-freshness and distinct Bank identities/keys. A serving Node wrapping multiple
-Bank reads is not itself an additional Bank vote. Synthetic sources, duplicate
+freshness and distinct Bank identities/keys.
+Bank signing keys must be canonical standard Base64 SPKI and different from
+configured Node wrapper keys; alternative key encodings cannot create new votes.
+A serving Node wrapping multiple Bank reads is not itself an additional Bank vote. Synthetic sources, duplicate
 votes, expired reads, unknown fields and noninteroperable numeric values fail
 closed. Verified `incompatible` and `unknown` observations remain visible to
 operators but never count as compatible votes.
@@ -64,8 +66,10 @@ ordered consensus proof, package/configuration bindings, backup evidence or
 execution history. Core explicitly reports these missing and `ready:false`;
 it does not infer them from signatures or runtime health. The current plan API
 cannot accept a target with absent package/configuration bindings. The actual
-Core Bank producer `/v1/releases/observation` remains to be integrated with
-independent compatibility checks; the outbound reader is not that producer.
+Core Bank producer `/v1/releases/observation` now supplies authenticated signed
+runtime reads; see [Bank producer contract and configuration](BANK_RELEASE_READ_API.md).
+It deliberately cannot return `compatible` while independent complete-Cell
+target checks remain absent. The outbound reader is separate from this producer.
 
 ## Quarantined legacy operational envelope
 
@@ -133,11 +137,17 @@ When a runtime short-lived ROLE_ADMIN credential is provisioned, Core reads
 The old internal shared secret does not authorize this admin endpoint and is
 never substituted. The credential file is reread on every request for rotation,
 must be regular, private, non-symlink, <=16 KiB, and is never returned or logged.
+Its path must be absolute and normalized, with no ancestor symlinks; reads are
+bounded even if a file grows during credential rotation. Projected Kubernetes
+Secret links require a reviewed private-volume copy, not a permissive fallback.
 
 The expected schema is `kerosene.kfe-maintenance/v1`, with mode/changeId/revision/
 observedAt/safeToUpdate/blockers (named nonnegative integer counts). Core requires
-fresh observedAt, a known nonempty mode, a nonnegative integer revision and zero
-blocker counts as well as `safeToUpdate:true`. Missing auth, unavailable endpoint,
+fresh observedAt, the actual `ACTIVE`/`DRAINING` mode and an interoperable
+nonnegative integer revision. Safety additionally requires `DRAINING`, a valid
+change ID/positive revision, explicit mutation/callback/read-side-effect coverage
+counts, all blocker counts zero and `safeToUpdate:true`. Missing coverage is
+reported as `KFE_COVERAGE_EVIDENCE_MISSING`; `ACTIVE` never qualifies. Missing auth, unavailable endpoint,
 unknown schema/status or stale evidence becomes UNKNOWN and a readiness blocker.
 Snapshot/plans expose this evidence. KFE drain/resume remain KFE-owned audited
 ROLE_ADMIN operations with `{changeId,reason,expectedRevision}`; Core's operator

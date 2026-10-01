@@ -1,7 +1,6 @@
 package com.kerosene.common.admin.cell;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.security.KeyFactory;
 import java.security.Signature;
 import java.security.spec.X509EncodedKeySpec;
@@ -13,27 +12,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 /** Consumes Contracts' release-observations/v1; wrapper votes are not Bank votes. */
 final class NodeObservationVerifier {
     private final CellOperationsProperties config;
-    private static final ObjectMapper JSON = new ObjectMapper();
     NodeObservationVerifier(CellOperationsProperties config) { this.config = config; }
 
-    static byte[] canonical(JsonNode node) throws Exception { return JSON.writeValueAsBytes(sorted(node)); }
-    private static Object sorted(JsonNode node) {
-        if (node.isObject()) {
-            var result = new TreeMap<String, Object>();
-            node.properties().forEach(field -> result.put(field.getKey(), sorted(field.getValue())));
-            return result;
-        }
-        if (node.isArray()) { var result = new ArrayList<Object>(); node.forEach(value -> result.add(sorted(value))); return result; }
-        if (node.isNull()) return null;
-        if (node.isTextual()) return node.textValue();
-        if (node.isBoolean()) return node.booleanValue();
-        if (node.isIntegralNumber() && node.canConvertToLong() && node.longValue() >= -9007199254740991L && node.longValue() <= 9007199254740991L) return node.longValue();
-        throw new IllegalArgumentException("noninteroperable canonical JSON number");
+    static byte[] canonical(JsonNode node) throws Exception {
+        return com.kerosene.common.release.ReleaseCanonicalJson.bytes(node);
     }
     private static void fields(JsonNode node, String... fields) {
         var expected = Set.of(fields);
@@ -58,8 +44,10 @@ final class NodeObservationVerifier {
         String key = trusted.get(member);
         if (key == null || (requiredMember != null && !requiredMember.equals(member)) || !key.equals(signature.path("publicKeyDerBase64").asText())) throw new IllegalArgumentException("untrusted signer");
         var payload = value.deepCopy(); ((com.fasterxml.jackson.databind.node.ObjectNode) payload).remove("signatures");
+        var publicKey = KeyFactory.getInstance("Ed25519").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(key)));
+        if (!key.equals(Base64.getEncoder().encodeToString(publicKey.getEncoded()))) throw new IllegalArgumentException("noncanonical pinned key");
         var verifier = Signature.getInstance("Ed25519");
-        verifier.initVerify(KeyFactory.getInstance("Ed25519").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(key))));
+        verifier.initVerify(publicKey);
         verifier.update(canonical(payload));
         if (!verifier.verify(Base64.getDecoder().decode(signature.path("signatureBase64").asText()))) throw new IllegalArgumentException("signature mismatch");
     }
@@ -77,23 +65,32 @@ final class NodeObservationVerifier {
             String id = text(read, "releaseId", "[a-z0-9][a-z0-9._-]{2,127}");
             long target = read.path("targetSequence").asLong(-1);
             if (!read.path("targetSequence").isIntegralNumber() || target < 1 || target > 9007199254740991L || !config.networkId.equals(read.path("networkId").asText()) || !config.targetReleaseDigest.equals(read.path("releaseLockCanonicalDigest").asText()) || (releaseId != null && (!releaseId.equals(id) || sequence != target))) throw new IllegalArgumentException("mixed release domain");
-            releaseId = id; sequence = target; expiry = read.path("expiresAt").asText();
+            releaseId = id; sequence = target;
+            Instant readExpiry = Instant.parse(read.path("expiresAt").asText());
             JsonNode bank = read.path("bankRead");
             fields(bank, "schema", "releaseId", "networkId", "targetSequence", "releaseLockCanonicalDigest", "issuedAt", "expiresAt", "challenge", "source", "observation", "signatures");
             if (!"kerosene.bank-release-read/v1".equals(bank.path("schema").asText()) || !"bank-runtime".equals(bank.path("source").asText()) || !bank.path("observation").equals(read.path("observation"))) throw new IllegalArgumentException("synthetic or mismatched Bank read");
             text(bank, "challenge", "[0-9a-f]{64}");
             for (String field : List.of("releaseId", "networkId", "targetSequence", "releaseLockCanonicalDigest")) if (!bank.path(field).equals(read.path(field))) throw new IllegalArgumentException("Bank target mismatch");
             lifetime(bank, now);
+            Instant bankExpiry = Instant.parse(bank.path("expiresAt").asText());
+            Instant effectiveExpiry = readExpiry.isBefore(bankExpiry) ? readExpiry : bankExpiry;
+            if (expiry == null || effectiveExpiry.isBefore(Instant.parse(expiry))) expiry = effectiveExpiry.toString();
             JsonNode observation = bank.path("observation");
             fields(observation, "observerId", "status", "observedSequence", "releaseDigest", "observedAt");
             String member = text(observation, "observerId", "[a-z0-9][a-z0-9._-]{2,127}");
             signed(bank, config.bankKeys, member);
+            if (config.signerKeys.containsValue(config.bankKeys.get(member))) throw new IllegalArgumentException("Bank and Node signing identities must be independent");
             if (!config.observers.contains(member) || !seen.add(member) || !distinctKeys.add(config.bankKeys.get(member))) throw new IllegalArgumentException("unknown/duplicate Bank vote identity");
             Instant observed = Instant.parse(observation.path("observedAt").asText());
             Instant issued = Instant.parse(bank.path("issuedAt").asText());
             if (observed.isAfter(issued.plusSeconds(5)) || observed.isBefore(issued.minusSeconds(900))) throw new IllegalArgumentException("observation age");
             String status = observation.path("status").asText();
             if (!List.of("compatible", "incompatible", "unknown").contains(status)) throw new IllegalArgumentException("unknown status");
+            if (!observation.path("observedSequence").isIntegralNumber() || !observation.path("observedSequence").canConvertToLong()
+                    || observation.path("observedSequence").longValue() < 0 || observation.path("observedSequence").longValue() > 9007199254740991L)
+                throw new IllegalArgumentException("invalid observed sequence");
+            text(observation, "releaseDigest", "sha256:[0-9a-f]{64}");
             boolean accepted = "compatible".equals(status) && observation.path("observedSequence").isIntegralNumber() && observation.path("observedSequence").asLong(-1) == sequence && config.targetReleaseDigest.equals(observation.path("releaseDigest").asText());
             if (accepted) compatible++;
             votes.add(Map.of("observerId", member, "status", status, "observedAt", observed.toString(), "fresh", true, "accepted", accepted, "observedSequence", observation.path("observedSequence").asLong(-1), "releaseDigest", observation.path("releaseDigest").asText()));

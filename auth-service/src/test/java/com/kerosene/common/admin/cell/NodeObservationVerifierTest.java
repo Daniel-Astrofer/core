@@ -79,4 +79,41 @@ class NodeObservationVerifierTest {
             assertEquals(status, ((Map<?, ?>) ((List<?>) quorum.get("votes")).getFirst()).get("status"));
         }
     }
+    @Test void publishedEvidenceExpiresWithEarliestIndependentBankReadNotLastWrapper() throws Exception {
+        fixture();
+        bankRead.put("expiresAt", now.plusSeconds(10).toString()); sign(bankRead, bank, "bank-one");
+        read.put("expiresAt", now.plusSeconds(50).toString()); sign(read, node, "node-one");
+        assertEquals(now.plusSeconds(10).toString(), verify().get("expiresAt"));
+        var secondKey = KeyPairGenerator.getInstance("Ed25519").generateKeyPair();
+        config.observers = List.of("bank-one", "bank-two");
+        config.bankKeys = Map.of("bank-one", Base64.getEncoder().encodeToString(bank.getPublic().getEncoded()),
+                "bank-two", Base64.getEncoder().encodeToString(secondKey.getPublic().getEncoded()));
+        var secondBankRead = bankRead.deepCopy().put("expiresAt", now.plusSeconds(30).toString());
+        ((ObjectNode) secondBankRead.path("observation")).put("observerId", "bank-two"); sign(secondBankRead, secondKey, "bank-two");
+        var second = read.deepCopy().put("expiresAt", now.plusSeconds(40).toString());
+        second.set("bankRead", secondBankRead); second.set("observation", secondBankRead.path("observation")); sign(second, node, "node-one");
+        ((com.fasterxml.jackson.databind.node.ArrayNode) wrapper.path("observations")).add(second);
+        assertEquals(now.plusSeconds(10).toString(), verify().get("expiresAt"));
+        wrapper.putArray("observations").add(second).add(read);
+        assertEquals(now.plusSeconds(10).toString(), verify().get("expiresAt"));
+    }
+    @Test void negativeReadStillRequiresNormativeSequenceAndDigestTypes() throws Exception {
+        fixture();
+        ((ObjectNode) bankRead.path("observation")).put("status", "unknown").put("observedSequence", -1);
+        sign(bankRead, bank, "bank-one"); sign(read, node, "node-one"); assertThrows(Exception.class, this::verify);
+        fixture();
+        ((ObjectNode) bankRead.path("observation")).put("status", "unknown").put("releaseDigest", "not-a-digest");
+        sign(bankRead, bank, "bank-one"); sign(read, node, "node-one"); assertThrows(Exception.class, this::verify);
+    }
+    @Test void sameSigningIdentityAndAlternateBase64EncodingCannotBecomeIndependentBankEvidence() throws Exception {
+        fixture();
+        config.signerKeys = Map.of("node-one", Base64.getEncoder().encodeToString(bank.getPublic().getEncoded()));
+        sign(read, bank, "node-one"); assertThrows(Exception.class, this::verify);
+        fixture();
+        String unpadded = Base64.getEncoder().withoutPadding().encodeToString(bank.getPublic().getEncoded());
+        assertNotEquals(config.bankKeys.get("bank-one"), unpadded);
+        config.bankKeys = Map.of("bank-one", unpadded);
+        ((ObjectNode) bankRead.path("signatures").get(0)).put("publicKeyDerBase64", unpadded);
+        sign(read, node, "node-one"); assertThrows(Exception.class, this::verify);
+    }
 }

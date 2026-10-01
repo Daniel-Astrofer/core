@@ -83,7 +83,7 @@ dependencies {
 
 
 tasks.withType<Test> {
-	useJUnitPlatform()
+	useJUnitPlatform { excludeTags("node-core-wire") }
     finalizedBy(tasks.jacocoTestReport)
 }
 

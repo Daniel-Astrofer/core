@@ -16,10 +16,13 @@ public class EndpointPolicyRegistry {
     public enum Policy {
         PUBLIC,
         ADMIN,
-        AUTHENTICATED
+        AUTHENTICATED,
+        CERTIFICATE_ONLY
     }
 
     private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
+    public static final String BANK_RELEASE_OBSERVATION = "/v1/releases/observation";
+    private static final String[] CERTIFICATE_ONLY = { BANK_RELEASE_OBSERVATION, BANK_RELEASE_OBSERVATION + "/**" };
 
     private static final String[] AUTHENTICATED = {
             "/auth/activation-status",
@@ -126,6 +129,7 @@ public class EndpointPolicyRegistry {
         registerForValidation(seen, errors, Policy.PUBLIC, PUBLIC);
         registerForValidation(seen, errors, Policy.ADMIN, ADMIN);
         registerForValidation(seen, errors, Policy.AUTHENTICATED, AUTHENTICATED);
+        registerForValidation(seen, errors, Policy.CERTIFICATE_ONLY, CERTIFICATE_ONLY);
 
         if (!errors.isEmpty()) {
             throw new IllegalStateException("Invalid endpoint policy registry: " + String.join("; ", errors));
@@ -146,6 +150,9 @@ public class EndpointPolicyRegistry {
 
     public Optional<Policy> policyFor(String path) {
         String normalizedPath = normalize(path);
+        for (String pattern : CERTIFICATE_ONLY) {
+            if (PATH_MATCHER.match(pattern, normalizedPath)) return Optional.of(Policy.CERTIFICATE_ONLY);
+        }
         for (String pattern : PUBLIC) {
             if (PATH_MATCHER.match(pattern, normalizedPath)) {
                 return Optional.of(Policy.PUBLIC);

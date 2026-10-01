@@ -45,6 +45,16 @@ class EndpointPolicyRegistryTest {
     void deniesUndeclaredEndpointsByDefault() {
         assertTrue(registry.policyFor("/internal/new-unreviewed-endpoint").isEmpty());
     }
+    @Test
+    void bankReleaseReadIsCertificateOnlyNotAPublicOrJwtEndpoint() {
+        assertEquals(EndpointPolicyRegistry.Policy.CERTIFICATE_ONLY,
+                registry.policyFor("/v1/releases/observation").orElseThrow());
+        assertEquals(EndpointPolicyRegistry.Policy.CERTIFICATE_ONLY,
+                registry.policyFor("/v1/releases/observation/nested").orElseThrow());
+        assertTrue(Arrays.stream(registry.publicEndpoints()).noneMatch(pattern -> pattern.contains("/v1/releases/observation")));
+        assertTrue(Arrays.stream(registry.authenticatedEndpoints()).noneMatch(pattern -> pattern.contains("/v1/releases/observation")));
+        assertTrue(Arrays.stream(registry.adminEndpoints()).noneMatch(pattern -> pattern.contains("/v1/releases/observation")));
+    }
 
     @Test
     void kfeWalletEndpointsArePublic() {
