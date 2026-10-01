@@ -9,6 +9,8 @@ last_reviewed: 2026-09-03
 
 # Kerosene Core (Auth gateway)
 
+Cell operator API: [routes, evidence proposal and runtime configuration](../reference/CELL_OPERATIONS_API.md).
+
 Java/Spring identity, session, notification and public gateway service.
 
 ## Modules

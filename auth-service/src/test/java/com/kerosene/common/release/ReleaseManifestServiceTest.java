@@ -22,6 +22,21 @@ class ReleaseManifestServiceTest {
     Path tempDir;
 
     @Test
+    void optionalAttestationDoesNotClaimAbsentSignatureValid() throws Exception {
+        Material material = signedManifest("abc123", "sha256:img", "sha256:code", "sha256:cfg");
+        var service = new ReleaseManifestService(objectMapper, new MockEnvironment(), "kerosene-backend", false,
+                material.manifest().toString(), "", "", "abc123", "time", "sha256:img", "sha256:code", "sha256:cfg");
+        assertFalse(service.snapshot().manifestSignatureValid());
+        assertFalse(service.snapshot().authorized());
+    }
+
+    @Test
+    void unknownRuntimeCannotMatchSignedExpectedValue() throws Exception {
+        Material material = signedManifest("abc123", "sha256:img", "sha256:code", "sha256:cfg");
+        assertFalse(service(material, true, "unknown", "sha256:img", "sha256:code", "sha256:cfg").snapshot().authorized());
+    }
+
+    @Test
     void authorizesRuntimeWhenSignedManifestMatches() throws Exception {
         Material material = signedManifest("abc123", "sha256:img", "sha256:code", "sha256:cfg");
 

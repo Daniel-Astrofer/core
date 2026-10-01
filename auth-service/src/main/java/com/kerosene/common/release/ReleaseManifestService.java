@@ -205,7 +205,7 @@ public class ReleaseManifestService {
 
     private boolean verifySignature(byte[] manifestBytes) throws Exception {
         if (manifestSignaturePath.isBlank() || publicKeyPath.isBlank()) {
-            return !attestationRequired;
+            return false;
         }
         byte[] signatureBytes = Base64.getMimeDecoder().decode(Files.readString(Path.of(manifestSignaturePath)).trim());
         byte[] publicKeyBytes = Base64.getMimeDecoder().decode(Files.readString(Path.of(publicKeyPath)).trim());
@@ -222,7 +222,7 @@ public class ReleaseManifestService {
             String expected = values[i];
             String actual = values[i + 1];
             String field = values[i + 2];
-            if (expected != null && !expected.isBlank() && !"unknown".equals(actual) && !expected.equals(actual)) {
+            if (expected != null && !expected.isBlank() && !expected.equals(actual)) {
                 return "MISMATCH_" + field;
             }
         }
